@@ -1,0 +1,156 @@
+/* ---------- Full-screen hero ---------- */
+.tawang-hero {
+  position: relative;
+  height: 100svh;
+  min-height: 620px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.tawang-hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tawang-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(16, 24, 30, 0.5) 0%,
+      rgba(16, 24, 30, 0.15) 45%,
+      rgba(16, 24, 30, 0.6) 100%
+    ),
+    linear-gradient(to right, rgba(16, 24, 30, 0.4), rgba(16, 24, 30, 0.05));
+}
+
+.tawang-hero__content {
+  position: relative;
+  z-index: 2;
+  padding-top: 96px;
+}
+
+.tawang-hero__eyebrow {
+  color: rgba(249, 246, 240, 0.85);
+}
+
+.tawang-hero__content h1 {
+  color: #f9f6f0;
+  text-shadow: 0 2px 24px rgba(16, 24, 30, 0.5);
+  margin-bottom: var(--space-2);
+}
+
+.tawang-hero__lede {
+  color: rgba(249, 246, 240, 0.92);
+  font-size: 1.12rem;
+  max-width: 52ch;
+}
+
+@media (max-width: 759px) {
+  .tawang-hero__content {
+    padding-top: 110px;
+  }
+  .tawang-hero__content h1 {
+    font-size: 2.6rem;
+  }
+}
+
+/* ---------- Zig-zag content blocks ---------- */
+.tawang-block {
+  display: grid;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.tawang-block__img {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.tawang-block__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tawang-block__body h2 {
+  margin-bottom: var(--space-2);
+}
+
+.tawang-block__body p {
+  color: var(--text-soft);
+}
+
+/* Height tiers: taller text blocks get taller images */
+.tawang-block--short .tawang-block__img {
+  aspect-ratio: 16 / 10;
+}
+
+.tawang-block--medium .tawang-block__img {
+  aspect-ratio: 4 / 3;
+}
+
+.tawang-block--tall .tawang-block__img {
+  aspect-ratio: 3 / 4;
+}
+
+@media (min-width: 480px) {
+  .tawang-block--tall .tawang-block__img {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+/* Zig-zag: image right => text column first on desktop */
+@media (min-width: 860px) {
+  .tawang-block {
+    grid-template-columns: 1.15fr 1fr;
+  }
+  .tawang-block--left .tawang-block__img {
+    order: 0;
+  }
+  .tawang-block--left .tawang-block__body {
+    order: 1;
+  }
+  .tawang-block--right .tawang-block__img {
+    order: 1;
+  }
+  .tawang-block--right .tawang-block__body {
+    order: 0;
+  }
+}
+
+/* ---------- Planning tips ---------- */
+.tawang-tips {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.tawang-tip h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tawang-tip svg {
+  color: var(--olive);
+  flex-shrink: 0;
+}
+
+.tawang-tip p {
+  color: var(--text-soft);
+  font-size: 0.97rem;
+}
+
+@media (min-width: 900px) {
+  .tawang-tips {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

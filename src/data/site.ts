@@ -22,6 +22,7 @@ export const navLinks = [
   { label: "Home", to: "/" },
   { label: "Stay", to: "/stay" },
   { label: "Restaurant", to: "/restaurant" },
+  { label: "Tawang", to: "/tawang" },
   { label: "Our Mission", to: "/our-mission" },
   { label: "Gallery", to: "/gallery" },
   { label: "Contact", to: "/contact" },

@@ -104,6 +104,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ---------- Tawang teaser ---------- */}
+      <section className="tawang-teaser" aria-labelledby="tawang-title">
+        <img
+          src={images.tawang.hero}
+          alt="Blue mountain ridges of Tawang under a dramatic sky"
+          className="tawang-teaser__img"
+          loading="lazy"
+        />
+        <div className="tawang-teaser__overlay" aria-hidden="true" />
+        <div className="tawang-teaser__content container text-center">
+          <span className="eyebrow tawang-teaser__eyebrow">The location</span>
+          <h2 id="tawang-title">Explore Tawang as you never did before</h2>
+          <p className="tawang-teaser__lede">
+            Majestic peaks, quiet lakes, waterfalls and the world's second
+            largest monastery — your retreat is right in the middle of it.
+          </p>
+          <Link to="/tawang" className="btn btn--light">
+            Discover Tawang <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
       {/* ---------- Restaurant overview ---------- */}
       <section className="section" aria-labelledby="rest-title">
         <div className="container rest-overview">

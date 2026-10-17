@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import RoomsPage from "./pages/RoomsPage";
 import RoomDetailsPage from "./pages/RoomDetailsPage";
 import RestaurantPage from "./pages/RestaurantPage";
+import TawangPage from "./pages/TawangPage";
 import MissionPage from "./pages/MissionPage";
 import GalleryPage from "./pages/GalleryPage";
 import ContactPage from "./pages/ContactPage";
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/stay" element={<RoomsPage />} />
         <Route path="/stay/:slug" element={<RoomDetailsPage />} />
         <Route path="/restaurant" element={<RestaurantPage />} />
+        <Route path="/tawang" element={<TawangPage />} />
         <Route path="/our-mission" element={<MissionPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/contact" element={<ContactPage />} />

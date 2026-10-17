@@ -10,6 +10,13 @@ const PLACEHOLDER =
 
 export const images = {
   hero: "/dharmahouse-hero.jpg",
+  tawang: {
+    hero: "/tawang-hero.jpg",
+    waterfall1: "/waterfall-tawang-1.jpg",
+    waterfall2: "/waterfall-tawang-2.jpg",
+    alcove: "/tawang-alcove.jpg",
+    lake: "/lake-tawang-3.jpg",
+  },
   rooms: {
     gardenDouble: PLACEHOLDER,
     woodenDetail: PLACEHOLDER,
