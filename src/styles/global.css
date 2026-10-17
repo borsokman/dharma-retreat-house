@@ -80,6 +80,12 @@ body {
   background-color: var(--cream);
   -webkit-font-smoothing: antialiased;
   position: relative;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+html {
+  overflow-x: clip;
 }
 
 /* Subtle paper grain at 3% */
