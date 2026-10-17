@@ -17,7 +17,6 @@ export default function HomePage() {
             src={images.hero}
             alt="Dharma Retreat House lit up in the evening"
             className="hero__img"
-            fetchPriority="high"
           />
         </picture>
         <div className="hero__overlay" aria-hidden="true" />

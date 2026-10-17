@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { BookingProvider } from "./hooks/useBookingSearch";
 import { SiteLayout } from "./layouts/SiteLayout";
 import HomePage from "./pages/HomePage";
 import RoomsPage from "./pages/RoomsPage";
@@ -14,7 +15,8 @@ import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
-    <Routes>
+    <BookingProvider>
+      <Routes>
       <Route element={<SiteLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/stay" element={<RoomsPage />} />
@@ -28,6 +30,7 @@ export default function App() {
       </Route>
       <Route path="/staff" element={<StaffLoginPage />} />
       <Route path="/staff/dashboard" element={<StaffDashboardPage />} />
-    </Routes>
+      </Routes>
+    </BookingProvider>
   );
 }
