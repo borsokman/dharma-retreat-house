@@ -1,11 +1,34 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, HeartHandshake, UtensilsCrossed } from "lucide-react";
+import { ArrowRight, HeartHandshake, UtensilsCrossed, Wifi, Tv, Coffee, ParkingSquare } from "lucide-react";
 import { BookingWidget } from "../components/BookingWidget";
 import { images } from "../data/images";
 import { rooms } from "../data/rooms";
 import { site } from "../data/site";
 import { formatMoney } from "../utils/format";
 import "./HomePage.css";
+
+const amenities = [
+  {
+    icon: Wifi,
+    title: "High-Speed Wi-Fi",
+    body: "Complimentary high-speed internet throughout all guest rooms & lounge areas.",
+  },
+  {
+    icon: Tv,
+    title: '55" Google TV',
+    body: "In-room smart streaming entertainment for relaxing mountain evenings.",
+  },
+  {
+    icon: Coffee,
+    title: "Home-Style Breakfast",
+    body: "Delicious hot, complimentary home-style breakfast prepared fresh daily.",
+  },
+  {
+    icon: ParkingSquare,
+    title: "Private Guest Parking",
+    body: "Ample, safe, and convenient private vehicle parking on premises.",
+  },
+];
 export default function HomePage() {
   return (
     <>
@@ -64,9 +87,9 @@ export default function HomePage() {
         <div className="container">
           <div className="section-head">
             <span className="eyebrow">Stay with us</span>
-            <h2 id="rooms-title">Rooms &amp; suites</h2>
+            <h2 id="rooms-title">Rooms &amp; Suites</h2>
             <p className="lede">
-              Simple, warm and quiet — three room types to choose from, each one
+              Five room types to choose from — every one quiet, warm and
               resting the whole building's charitable purpose.
             </p>
           </div>
@@ -100,6 +123,28 @@ export default function HomePage() {
             <Link to="/stay" className="btn btn--primary">
               See all rooms <ArrowRight size={16} aria-hidden="true" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Amenities ---------- */}
+      <section className="section" aria-labelledby="amenities-title">
+        <div className="container">
+          <div className="section-head section-head--center">
+            <span className="eyebrow">Homestay comforts</span>
+            <h2 id="amenities-title">Homestay Comforts &amp; Amenities</h2>
+            <p className="lede">
+              Everything you need for an easy, restful mountain stay.
+            </p>
+          </div>
+          <div className="amenities">
+            {amenities.map((a) => (
+              <article key={a.title} className="card card--hover amenity">
+                <a.icon size={26} aria-hidden="true" />
+                <h3>{a.title}</h3>
+                <p>{a.body}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>

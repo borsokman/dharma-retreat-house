@@ -199,6 +199,45 @@
   }
 }
 
+/* ---------- Amenities ---------- */
+.amenities {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.amenity {
+  text-align: center;
+  padding: var(--space-4) var(--space-3);
+}
+
+.amenity svg {
+  color: var(--olive);
+  margin-bottom: var(--space-2);
+}
+
+.amenity h3 {
+  font-size: 1.12rem;
+  margin-bottom: 6px;
+}
+
+.amenity p {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+@media (min-width: 700px) {
+  .amenities {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1020px) {
+  .amenities {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 /* ---------- Restaurant overview ---------- */
 .rest-overview {
   display: grid;
