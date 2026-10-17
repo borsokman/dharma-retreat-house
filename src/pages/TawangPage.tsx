@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Landmark, Plane, Sun } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { images } from "../data/images";
 import "./TawangPage.css";
+
 /**
- * Content blocks rendered as a zig-zag: image right (text first) then image
- * left (text after). The image gets a height class that roughly matches the
- * length of its accompanying text so columns stay balanced.
+ * All Tawang content as alternating image/text blocks. imageSide controls the
+ * zig-zag on desktop; size sets the image height tier so taller text columns
+ * get taller images.
  */
 const blocks: {
   title: string;
@@ -49,34 +50,58 @@ const blocks: {
     imageSide: "right",
     size: "tall",
   },
-];
-
-const visitTips = [
   {
-    icon: Sun,
-    title: "Best time to visit",
-    body: [
-      "Summer lasts from March until June, with comfortable temperatures between 5°C and 21°C — perfect for experiencing the beauty of the place.",
-      "July to September is the monsoon, with moderate rainfall. November to February is winter, with temperatures from −11°C to 12°C.",
-      "The best months to visit are March, April, May, June, September and October.",
+    title: "The best time to visit Tawang",
+    paragraphs: [
+      "Tawang experiences summer from March until June. The temperature remains comfortable between 5°C and 21°C and is apt to experience the beauty of the place.",
+      "July and September are the months of monsoon, and Tawang experiences moderate rainfall during this season. November to February is the winter season, when temperatures range from −11°C to 12°C.",
+      "The best season to visit Tawang is the summer season and the onset of the monsoon. The temperature remains comfortable and is apt for sightseeing. The best months to visit are March, April, May, June, September and October.",
     ],
+    image: images.tawang.mountainLake,
+    alt: "A high-altitude mountain lake reflecting clouds and rocky peaks",
+    imageSide: "left",
+    size: "tall",
   },
   {
-    icon: Plane,
-    title: "How to reach Tawang",
-    body: [
-      "By air: the nearest international airport is Lokpriya Gopinath Bordoloi International Airport, Guwahati, roughly 480 km from Tawang, well connected with Delhi, Mumbai, Kolkata, Bengaluru, Hyderabad, Chennai and many other cities.",
-      "By helicopter: a service operates from Guwahati Airport to Tawang on Monday, Tuesday, Thursday and Friday. Seats are limited (on average only 10–12), and the journey over Bhutan takes around 55 minutes.",
-      "By road: Tawang is 480 km from Guwahati in Assam — around 12 hours by car through small towns and villages. The highest point to cross is Sela Pass at 4,170 m above sea level.",
+    title: "How to reach Tawang by air",
+    paragraphs: [
+      "The nearest international airport from Tawang is Lokpriya Gopinath Bordoloi International Airport, Guwahati, roughly 480 km from Tawang. It is well connected with major cities like Delhi, Mumbai, Kolkata, Bengaluru, Hyderabad, Chennai and many others.",
     ],
+    image: images.tawang.plainsDusk,
+    alt: "Distant blue mountain ranges at dusk over a wide river plain",
+    imageSide: "right",
+    size: "short",
   },
   {
-    icon: Landmark,
+    title: "Guwahati to Tawang by helicopter",
+    paragraphs: [
+      "Helicopter service operates from Guwahati Airport to Tawang on Monday, Tuesday, Thursday and Friday. Due to the limited number of seats (on average only 10–12), booking early is essential. The helicopter journey to Tawang over Bhutan takes around 55 minutes.",
+    ],
+    image: images.tawang.selaRoad,
+    alt: "The winding road climbing toward Sela Pass under heavy clouds",
+    imageSide: "left",
+    size: "short",
+  },
+  {
+    title: "Guwahati to Tawang by road",
+    paragraphs: [
+      "Tawang is 480 km from Guwahati city in Assam. A journey by car takes around 12 hours, passing through various small towns and villages. The highest peak to cross is Sela Pass, at an altitude of 4,170 metres above sea level.",
+    ],
+    image: images.tawang.bridge,
+    alt: "A wooden suspension bridge decorated with colourful prayer flags over a river",
+    imageSide: "right",
+    size: "medium",
+  },
+  {
     title: "Permits to enter Arunachal Pradesh",
-    body: [
-      "Inner Line Permit (ILP): for Indian nationals other than natives of Arunachal Pradesh, an ILP is required to enter any part of the state.",
-      "Protected Area Permit (PAP): the Foreigners (Protected Areas) Act requires foreign visitors to obtain a PAP for certain areas — this is in addition to an Indian visa. Details: arunpol.gov.in/ilp.html",
+    paragraphs: [
+      "Inner Line Permit (ILP): for Indian nationals other than natives of Arunachal Pradesh, an Inner Line Permit is required for entering any part of Arunachal Pradesh.",
+      "Protected Area Permit (PAP): the Foreigners (Protected Areas) Act requires foreigners to obtain a Protected Area Permit to visit certain areas in India. This requirement is in addition to getting an Indian visa. Detailed information is available at arunpol.gov.in/ilp.html.",
     ],
+    image: images.tawang.welcomeGate,
+    alt: "The colourful 'Welcome to Tawang' gateway decorated with prayer flags",
+    imageSide: "left",
+    size: "medium",
   },
 ];
 
@@ -100,7 +125,7 @@ export default function TawangPage() {
         </div>
       </section>
 
-      <section className="section" aria-label="About Tawang">
+      <section className="section" aria-label="About Tawang and planning your visit">
         <div className="container">
           {blocks.map((block) => (
             <article
@@ -118,31 +143,7 @@ export default function TawangPage() {
               </div>
             </article>
           ))}
-        </div>
-      </section>
-
-      <section className="section section--sage" aria-label="Planning your visit">
-        <div className="container">
-          <div className="section-head section-head--center">
-            <span className="eyebrow">Plan your journey</span>
-            <h2>Visiting Tawang</h2>
-            <p className="lede">
-              Seasons, routes and permits — the essentials for a smooth trip.
-            </p>
-          </div>
-          <div className="tawang-tips">
-            {visitTips.map((tip) => (
-              <article key={tip.title} className="card tawang-tip">
-                <h3>
-                  <tip.icon size={20} aria-hidden="true" /> {tip.title}
-                </h3>
-                {tip.body.map((p) => (
-                  <p key={p.slice(0, 24)}>{p}</p>
-                ))}
-              </article>
-            ))}
-          </div>
-          <div className="text-center mt-4">
+          <div className="text-center" style={{ marginTop: "var(--space-5)" }}>
             <p className="lede" style={{ maxWidth: 560, margin: "0 auto 16px" }}>
               Dharma Retreat House sits right in this landscape — rest here
               while you explore.

@@ -16,6 +16,11 @@ export const images = {
     waterfall2: "/waterfall-tawang-2.jpg",
     alcove: "/tawang-alcove.jpg",
     lake: "/lake-tawang-3.jpg",
+    bridge: "/bridge-tawang-1.jpg",
+    selaRoad: "/tawang-4.jpg",
+    plainsDusk: "/tawang-5.jpg",
+    welcomeGate: "/tawang-8.jpg",
+    mountainLake: "/tawang-1.jpg",
   },
   rooms: {
     gardenDouble: PLACEHOLDER,
