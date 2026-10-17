@@ -1,0 +1,40 @@
+.modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 22, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  animation: fade-up 300ms var(--ease-organic) both;
+}
+
+.modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.modal__close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-soft);
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.modal__close:hover {
+  color: var(--text);
+  background: var(--sage);
+}

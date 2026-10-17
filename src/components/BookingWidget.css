@@ -1,0 +1,98 @@
+.widget {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  width: 100%;
+}
+
+.widget--hero {
+  backdrop-filter: blur(8px);
+  max-width: 880px;
+}
+
+.widget__tabs {
+  display: flex;
+  gap: 8px;
+  padding: 14px 18px 0;
+}
+
+.widget__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.98rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 11px 26px;
+  background: var(--sage);
+  color: var(--olive);
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    transform var(--transition);
+}
+
+.widget__tab:hover {
+  transform: translateY(-1px);
+}
+
+.widget__tab--active {
+  background: var(--forest);
+  color: #fff;
+}
+
+.widget__body {
+  padding: var(--space-3);
+}
+
+.widget__fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+  align-items: end;
+}
+
+.widget__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.widget__input-wrap svg {
+  position: absolute;
+  left: 14px;
+  color: var(--olive);
+  pointer-events: none;
+}
+
+.widget__input-wrap .input,
+.widget__input-wrap .select {
+  padding-left: 40px;
+}
+
+.widget__input-wrap .input[type="date"] {
+  padding-left: 14px;
+}
+
+.widget__submit {
+  grid-column: 1;
+}
+
+@media (min-width: 760px) {
+  .widget__fields {
+    grid-template-columns: repeat(4, 1fr) auto;
+  }
+  #panel-restaurant.widget__fields {
+    grid-template-columns: repeat(3, 1fr) auto;
+  }
+  .widget__submit {
+    grid-column: auto;
+  }
+  .widget__body {
+    padding: var(--space-2) var(--space-3) var(--space-3);
+  }
+}

@@ -1,0 +1,141 @@
+.page-head {
+  padding: calc(76px + var(--space-5)) 0 var(--space-3);
+  background: var(--sage);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
+.page-head h1 {
+  margin-bottom: var(--space-1);
+}
+
+/* ---------- Restaurant page ---------- */
+.rest-grid {
+  display: grid;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.rest-photo {
+  border-radius: 55% 45% 50% 50% / 45% 55% 45% 55%;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  aspect-ratio: 4 / 3;
+}
+
+.rest-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rest-menu {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.rest-menu li {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.rest-menu span {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
+.rest-policy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+  margin-bottom: 8px;
+}
+
+.rest-search {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.rest-input-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rest-input-icon svg {
+  position: absolute;
+  left: 14px;
+  color: var(--olive);
+  pointer-events: none;
+}
+
+.rest-input-icon .select,
+.rest-input-icon .input {
+  padding-left: 40px;
+}
+
+.rest-input-icon .input[type="time"],
+.rest-input-icon .input[type="date"] {
+  padding-left: 14px;
+}
+
+/* ---------- Slot picker ---------- */
+.slot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.slot-grid--page {
+  margin-top: var(--space-2);
+}
+
+.slot {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--forest);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
+  min-height: 48px;
+}
+
+.slot:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.slot--selected {
+  background: var(--forest);
+  color: #fff;
+}
+
+@media (min-width: 860px) {
+  .rest-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rest-search {
+    grid-template-columns: repeat(3, 1fr) auto;
+    align-items: end;
+    max-width: 880px;
+  }
+}

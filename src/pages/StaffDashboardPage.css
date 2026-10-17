@@ -1,0 +1,71 @@
+.staff-dash {
+  min-height: 100svh;
+  background: var(--cream);
+}
+
+.staff-dash__bar {
+  background: var(--forest-deep);
+  color: #f9f6f0;
+  padding: var(--space-3) 0;
+}
+
+.staff-dash__bar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.staff-dash__bar h1 {
+  color: #f9f6f0;
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.staff-dash__date {
+  color: rgba(249, 246, 240, 0.7);
+  margin: 0;
+}
+
+.staff-dash__exit {
+  margin-left: auto;
+  color: rgba(249, 246, 240, 0.85);
+  font-weight: 700;
+}
+
+.staff-dash__exit:hover {
+  color: #fff;
+}
+
+.staff-dash__body {
+  padding: var(--space-4) var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.staff-cards {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.staff-cards h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.3rem;
+}
+
+.staff-cards svg {
+  color: var(--olive);
+}
+
+.staff-plan {
+  padding-left: 20px;
+  color: var(--text-soft);
+}
+
+@media (min-width: 900px) {
+  .staff-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -1,0 +1,49 @@
+.confirm-summary {
+  background: var(--sage);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  margin: 0 0 var(--space-2);
+}
+
+.confirm-summary > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(44, 36, 22, 0.12);
+}
+
+.confirm-summary > div:last-child {
+  border-bottom: none;
+}
+
+.confirm-summary dt {
+  font-weight: 700;
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.confirm-summary dd {
+  margin: 0;
+  text-align: right;
+}
+
+.confirm-taxes {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+
+.confirm-note {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  background: rgba(126, 184, 180, 0.14);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+}
+
+.confirm-actions {
+  margin-top: var(--space-2);
+}

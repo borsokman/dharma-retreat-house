@@ -1,0 +1,127 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  transition:
+    background-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.nav--overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 24, 16, 0.55),
+    rgba(20, 24, 16, 0)
+  );
+}
+
+.nav:not(.nav--overlay) {
+  background: rgba(249, 246, 240, 0.92);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 76px;
+}
+
+.nav__links {
+  display: none;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav__link {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  position: relative;
+  padding: 6px 2px;
+}
+
+.nav--overlay .nav__link {
+  color: #f9f6f0;
+}
+
+.nav__link:hover {
+  color: var(--sunset);
+}
+
+.nav__link--active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2.5px;
+  border-radius: 999px;
+  background: var(--sunset);
+}
+
+.nav__toggle {
+  display: inline-flex;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.nav--overlay .nav__toggle {
+  color: #f9f6f0;
+}
+
+.nav__mobile {
+  background: var(--cream);
+  box-shadow: var(--shadow-lg);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: var(--space-3);
+  margin: 0 var(--space-2);
+  display: grid;
+  gap: 4px;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+}
+
+.nav__mobile-link {
+  display: block;
+  padding: 14px 16px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-radius: 16px;
+  color: var(--text);
+}
+
+.nav__mobile-link:hover {
+  background: var(--sage);
+}
+
+.nav__mobile-link--active {
+  background: var(--sage);
+  color: var(--forest);
+}
+
+.nav__staff-link {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--text-faint);
+}
+
+@media (min-width: 960px) {
+  .nav__links {
+    display: flex;
+  }
+  .nav__toggle,
+  .nav__mobile {
+    display: none;
+  }
+}
