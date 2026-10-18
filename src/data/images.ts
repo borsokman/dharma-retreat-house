@@ -9,7 +9,7 @@ const PLACEHOLDER =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='940' height='650'%3E%3Crect width='940' height='650' fill='%23E8EDE5'/%3E%3Cpath d='M470 180c100 60 180 150 168 260S520 610 470 610s-146-60-158-170 68-200 158-260Z' fill='%23D3DCD0'/%3E%3C/svg%3E";
 
 export const images = {
-  hero: "/dharmahouse-hero.jpg",
+  hero: "/dharmahouse-hero1.jpg",
   tawang: {
     hero: "/tawang-hero.jpg",
     waterfall1: "/waterfall-tawang-1.jpg",
