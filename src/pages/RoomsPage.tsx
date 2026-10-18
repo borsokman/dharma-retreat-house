@@ -1,29 +1,35 @@
-import { useMemo } from "react";
-import { useLocation } from "react-router-dom";
-import { BookingWidget } from "../components/BookingWidget";
-import { AvailabilityResults } from "../components/AvailabilityResults";
-import { useBookingSearch } from "../hooks/useBookingSearch";
-import type { AvailabilityQuery } from "../api/types";
-import { isMockMode } from "../api/client";
+import { useCallback, useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { rooms } from "../data/rooms";
+import type { RoomType } from "../api/types";
+import { formatMoney } from "../utils/format";
+import "./RoomsPage.css";
 
 export default function RoomsPage() {
-  const location = useLocation();
-  const { search } = useBookingSearch();
+  const [openRoom, setOpenRoom] = useState<RoomType | null>(null);
+  const [index, setIndex] = useState(0);
 
-  const query: AvailabilityQuery | null = useMemo(() => {
-    const fromState = (location.state as { search?: AvailabilityQuery } | null)
-      ?.search;
-    const q = fromState ?? search;
-    if (q.checkIn && q.checkOut && q.checkOut > q.checkIn) {
-      return {
-        checkIn: q.checkIn,
-        checkOut: q.checkOut,
-        guests: q.guests,
-        rooms: q.rooms,
-      };
-    }
-    return null;
-  }, [location.state, search]);
+  const close = useCallback(() => setOpenRoom(null), []);
+
+  useEffect(() => {
+    if (!openRoom) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowLeft") setIndex((i) => (i - 1 + openRoom.photos.length) % openRoom.photos.length);
+      if (e.key === "ArrowRight") setIndex((i) => (i + 1) % openRoom.photos.length);
+    };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [openRoom, close]);
+
+  function open(room: RoomType) {
+    setOpenRoom(room);
+    setIndex(0);
+  }
 
   return (
     <>
@@ -32,38 +38,100 @@ export default function RoomsPage() {
           <span className="eyebrow">Stay with us</span>
           <h1>Rooms &amp; suites</h1>
           <p className="lede">
-            Choose your dates and we'll show you which rooms are free and what
-            your stay really costs — taxes included.
+            Five room types to choose from — every one quiet, warm and supporting
+            the school's work. Tap a room to see its photos.
           </p>
         </div>
       </section>
 
       <section className="section" style={{ paddingTop: "var(--space-4)" }}>
         <div className="container">
-          {isMockMode && (
-            <p className="badge badge--clay" role="note" style={{ marginBottom: 16 }}>
-              Preview mode — availability and prices are simulated
-            </p>
-          )}
-          <BookingWidget variant="inline" />
+          <div className="room-grid">
+            {rooms.map((room) => (
+              <button
+                key={room.slug}
+                type="button"
+                className="room-tile card card--hover"
+                onClick={() => open(room)}
+                aria-label={`View photos of ${room.name}`}
+              >
+                <div className="room-tile__img">
+                  <img
+                    src={room.photos[0]}
+                    alt={room.name}
+                    loading="lazy"
+                    width="940"
+                    height="650"
+                  />
+                </div>
+                <div className="room-tile__body">
+                  <h3>{room.name}</h3>
+                  <p className="lede">{room.shortDescription}</p>
+                  <p className="room-tile__price">
+                    from {formatMoney(room.basePrice, room.currency)} / night
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="section section--sage" aria-live="polite" style={{ paddingTop: "var(--space-5)" }}>
-        <div className="container">
-          {query ? (
-            <AvailabilityResults query={query} />
-          ) : (
-            <div className="card text-center">
-              <h3>Pick your dates above</h3>
-              <p className="lede">
-                Choose a check-in and check-out date to see live availability
-                and the total price for your stay.
+      {openRoom && (
+        <div
+          className="lightbox__backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${openRoom.name} photos`}
+          onClick={close}
+        >
+          <button
+            type="button"
+            className="lightbox__close"
+            onClick={close}
+            aria-label="Close photo gallery"
+          >
+            <X size={24} />
+          </button>
+          <div className="lightbox" onClick={(e) => e.stopPropagation()}>
+            <div className="lightbox__stage">
+              <img
+                src={openRoom.photos[index]}
+                alt={`${openRoom.name} photo ${index + 1} of ${openRoom.photos.length}`}
+              />
+              {openRoom.photos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="lightbox__nav lightbox__nav--prev"
+                    onClick={() =>
+                      setIndex((i) => (i - 1 + openRoom.photos.length) % openRoom.photos.length)
+                    }
+                    aria-label="Previous photo"
+                  >
+                    <ChevronLeft size={28} />
+                  </button>
+                  <button
+                    type="button"
+                    className="lightbox__nav lightbox__nav--next"
+                    onClick={() => setIndex((i) => (i + 1) % openRoom.photos.length)}
+                    aria-label="Next photo"
+                  >
+                    <ChevronRight size={28} />
+                  </button>
+                </>
+              )}
+            </div>
+            <div className="lightbox__info">
+              <h3>{openRoom.name}</h3>
+              <p className="lede">{openRoom.shortDescription}</p>
+              <p className="lightbox__count">
+                Photo {index + 1} of {openRoom.photos.length}
               </p>
             </div>
-          )}
+          </div>
         </div>
-      </section>
+      )}
     </>
   );
 }

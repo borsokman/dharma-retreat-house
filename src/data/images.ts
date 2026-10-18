@@ -29,6 +29,11 @@ export const images = {
     balcony: PLACEHOLDER,
     valleySuite: PLACEHOLDER,
     breakfast: PLACEHOLDER,
+    luxurySuite: "/images/rooms/luxury-suite.jpg",
+    superDeluxe: "/images/rooms/super-deluxe.jpg",
+    twinExecutive: "/images/rooms/twin-executive.jpg",
+    standardKing: "/images/rooms/standard-king.jpg",
+    standardTwin: "/images/rooms/standard-twin.jpg",
   },
   restaurant: {
     interior: PLACEHOLDER,
