@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { rooms } from "../data/rooms";
 import type { RoomType } from "../api/types";
@@ -48,14 +49,13 @@ export default function RoomsPage() {
         <div className="container">
           <div className="room-grid">
             {rooms.map((room) => (
-              <button
-                key={room.slug}
-                type="button"
-                className="room-tile card card--hover"
-                onClick={() => open(room)}
-                aria-label={`View photos of ${room.name}`}
-              >
-                <div className="room-tile__img">
+              <article key={room.slug} className="room-tile card card--hover">
+                <button
+                  type="button"
+                  className="room-tile__img"
+                  onClick={() => open(room)}
+                  aria-label={`View photos of ${room.name}`}
+                >
                   <img
                     src={room.photos[0]}
                     alt={room.name}
@@ -63,15 +63,15 @@ export default function RoomsPage() {
                     width="940"
                     height="650"
                   />
-                </div>
-                <div className="room-tile__body">
+                </button>
+                <Link to={`/stay/${room.slug}`} className="room-tile__body">
                   <h3>{room.name}</h3>
                   <p className="lede">{room.shortDescription}</p>
                   <p className="room-tile__price">
                     from {formatMoney(room.basePrice, room.currency)} / night
                   </p>
-                </div>
-              </button>
+                </Link>
+              </article>
             ))}
           </div>
         </div>
