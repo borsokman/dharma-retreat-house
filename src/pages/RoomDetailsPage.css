@@ -6,6 +6,16 @@
   margin-bottom: var(--space-2);
 }
 
+.page-head {
+  padding: calc(76px + var(--space-5)) 0 var(--space-3);
+  background: var(--sage);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
+.page-head h1 {
+  margin-bottom: var(--space-1);
+}
+
 .room-gallery {
   display: grid;
   grid-template-columns: 1fr;

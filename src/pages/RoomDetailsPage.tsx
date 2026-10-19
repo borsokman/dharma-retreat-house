@@ -49,23 +49,27 @@ export default function RoomDetailsPage() {
 
   if (roomState.kind === "loading") {
     return (
-      <div className="section container" role="status">
-        <span className="spinner" aria-hidden="true" /> Loading room…
-      </div>
+      <section className="page-head">
+        <div className="container" role="status">
+          <span className="spinner" aria-hidden="true" /> Loading room…
+        </div>
+      </section>
     );
   }
 
   if (roomState.kind === "error" || (roomState.kind === "done" && !roomState.data)) {
     return (
-      <div className="section container">
-        <div className="card text-center" role="alert">
-          <h2>Room not found</h2>
-          <p className="lede">This room may have been renamed or removed.</p>
-          <Link to="/stay" className="btn btn--primary">
-            Back to all rooms
-          </Link>
+      <section className="page-head">
+        <div className="container">
+          <div className="card text-center" role="alert">
+            <h2>Room not found</h2>
+            <p className="lede">This room may have been renamed or removed.</p>
+            <Link to="/stay" className="btn btn--primary">
+              Back to all rooms
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -74,18 +78,23 @@ export default function RoomDetailsPage() {
 
   return (
     <>
-      <section className="section container" style={{ paddingTop: "var(--space-6)" }}>
-        <Link to="/stay" className="room-details__back">
-          <ArrowLeft size={16} aria-hidden="true" /> All rooms
-        </Link>
-        {isMockMode && (
-          <p className="badge badge--clay" role="note" style={{ marginTop: 8 }}>
-            Preview mode — availability and prices are simulated
-          </p>
-        )}
-        <h1 className="mt-2">{room.name}</h1>
-        <p className="lede" style={{ maxWidth: 640 }}>{room.shortDescription}</p>
+      <section className="page-head">
+        <div className="container">
+          <Link to="/stay" className="room-details__back">
+            <ArrowLeft size={16} aria-hidden="true" /> All rooms
+          </Link>
+          {isMockMode && (
+            <p className="badge badge--clay" role="note" style={{ marginTop: 8 }}>
+              Preview mode — availability and prices are simulated
+            </p>
+          )}
+          <h1 className="mt-2">{room.name}</h1>
+          <p className="lede" style={{ maxWidth: 640 }}>{room.shortDescription}</p>
+        </div>
+      </section>
 
+      <section className="section" style={{ paddingTop: "var(--space-4)" }}>
+        <div className="container">
         <div
           className="room-gallery"
           role="group"
@@ -216,6 +225,7 @@ export default function RoomDetailsPage() {
               14:00, check-out until 11:00.
             </p>
           </aside>
+        </div>
         </div>
       </section>
 
