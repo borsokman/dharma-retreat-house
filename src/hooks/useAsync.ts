@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type AsyncState<T> =
   | { kind: "idle" }
@@ -9,23 +9,23 @@ export type AsyncState<T> =
 /** Small state machine for API calls: idle → loading → done | error. */
 export function useAsync<T>() {
   const [state, setState] = useState<AsyncState<T>>({ kind: "idle" });
+  const cancelled = useRef(false);
 
   useEffect(() => {
+    cancelled.current = false;
     return () => {
-      cancelled = true;
+      cancelled.current = true;
     };
   }, []);
-
-  let cancelled = false;
 
   async function run(fn: () => Promise<T>) {
     setState({ kind: "loading" });
     try {
       const data = await fn();
-      if (!cancelled) setState({ kind: "done", data });
+      if (!cancelled.current) setState({ kind: "done", data });
       return data;
     } catch (err) {
-      if (!cancelled)
+      if (!cancelled.current)
         setState({
           kind: "error",
           message:
