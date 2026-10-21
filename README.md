@@ -1,76 +1,114 @@
-# Dharma Retreat House — Hotel & Restaurant Booking Website
 
-A charity-operated hotel and restaurant website. All proceeds support the
-Tashol Tengyur School, located in the same building. Guests book rooms and
-restaurant tables online without creating an account.
-
-## What's included
-
-- **Homepage** with a full-screen hero (real photo in `public/dharmahouse-hero.jpg`)
-  and a two-tab booking widget (Stay / Restaurant).
-- **Stay** — room listing with date-based availability and total prices
-  (taxes shown when the backend supplies them).
-- **Room details** — gallery, amenities, per-date availability check and
-  reservation flow.
-- **Restaurant** — menu highlights, slot search and reservation flow.
-- **Our Mission**, **Gallery**, **Contact** — editable content with clearly
-  marked placeholders.
-- **Manage booking** — account-free lookup and cancellation using a booking
-  reference plus a secure code/link (the backend must verify the secure part).
-- **Staff area** (`/staff`) — sign-in placeholder and dashboard skeleton.
-  Real authentication and authorization must be enforced by the backend.
-
-## Tech
-
-- React + TypeScript + Vite
-- React Router for navigation
-- A single, isolated API layer in `src/api/`:
-
-  - `contract.ts` — the interface the Go backend must fulfill
-  - `client.ts` — chooses the implementation based on `VITE_API_BASE_URL`;
-    also contains the starting point of the real HTTP client
-  - `mock.ts` — mock adapter used when no API URL is configured.
-    **Everything it returns is simulated** (availability, prices, bookings).
-
-## Getting started
-
-```bash
-npm install
-npm run dev
 ```
+dharma-retreat-house
+├─ .DS_Store
+├─ README.md
+├─ backend
+│  ├─ .DS_Store
+│  ├─ .npmrc
+│  ├─ README.md
+│  ├─ migrations
+│  │  └─ 001_init.sql
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ src
+│  │  ├─ admin.ts
+│  │  └─ db.ts
+│  ├─ test
+│  │  └─ admin.test.ts
+│  ├─ tests
+│  │  └─ schema_tests.py
+│  └─ tsconfig.json
+└─ frontend
+   ├─ .DS_Store
+   ├─ .env.example
+   ├─ README.md
+   ├─ index.html
+   ├─ package-lock.json
+   ├─ package.json
+   ├─ public
+   │  ├─ .DS_Store
+   │  ├─ dharmahouse-hero.jpg
+   │  ├─ dharmahouse-hero1.jpg
+   │  ├─ rooms
+   │  │  ├─ luxury-suite.jpg
+   │  │  ├─ standard-king.jpg
+   │  │  ├─ standard-twin.jpg
+   │  │  ├─ super-deluxe.jpg
+   │  │  └─ twin-executive.jpg
+   │  └─ tawang
+   │     ├─ tawang-alcove.jpg
+   │     ├─ tawang-bridge.jpg
+   │     ├─ tawang-hero.jpg
+   │     ├─ tawang-lake-1.jpg
+   │     ├─ tawang-lake-2.jpg
+   │     ├─ tawang-mountains-3.jpg
+   │     ├─ tawang-mountains-4.jpg
+   │     ├─ tawang-waterfall-1.jpg
+   │     ├─ tawang-waterfall-2.jpg
+   │     └─ tawang-welcome.jpg
+   ├─ src
+   │  ├─ App.tsx
+   │  ├─ api
+   │  │  ├─ client.ts
+   │  │  ├─ contract.ts
+   │  │  ├─ mock.ts
+   │  │  └─ types.ts
+   │  ├─ components
+   │  │  ├─ AvailabilityResults.tsx
+   │  │  ├─ BookingRequestModal.tsx
+   │  │  ├─ BookingWidget.css
+   │  │  ├─ BookingWidget.tsx
+   │  │  ├─ Footer.css
+   │  │  ├─ Footer.tsx
+   │  │  ├─ Logo.tsx
+   │  │  ├─ Modal.css
+   │  │  ├─ Modal.tsx
+   │  │  ├─ Navbar.css
+   │  │  ├─ Navbar.tsx
+   │  │  ├─ RestaurantBookingModal.tsx
+   │  │  └─ RoomCard.css
+   │  ├─ data
+   │  │  ├─ images.ts
+   │  │  ├─ rooms.ts
+   │  │  └─ site.ts
+   │  ├─ hooks
+   │  │  ├─ useAsync.ts
+   │  │  └─ useBookingSearch.tsx
+   │  ├─ layouts
+   │  │  └─ SiteLayout.tsx
+   │  ├─ main.tsx
+   │  ├─ pages
+   │  │  ├─ ContactPage.css
+   │  │  ├─ ContactPage.tsx
+   │  │  ├─ GalleryPage.tsx
+   │  │  ├─ HomePage.css
+   │  │  ├─ HomePage.tsx
+   │  │  ├─ ManageBookingPage.css
+   │  │  ├─ ManageBookingPage.tsx
+   │  │  ├─ MissionPage.tsx
+   │  │  ├─ NotFoundPage.tsx
+   │  │  ├─ RestaurantPage.css
+   │  │  ├─ RestaurantPage.tsx
+   │  │  ├─ RoomDetailsPage.css
+   │  │  ├─ RoomDetailsPage.tsx
+   │  │  ├─ RoomsPage.css
+   │  │  ├─ RoomsPage.tsx
+   │  │  ├─ StaffDashboardPage.css
+   │  │  ├─ StaffDashboardPage.tsx
+   │  │  ├─ StaffLoginPage.css
+   │  │  ├─ StaffLoginPage.tsx
+   │  │  ├─ TawangPage.css
+   │  │  └─ TawangPage.tsx
+   │  ├─ styles
+   │  │  ├─ forms.css
+   │  │  └─ global.css
+   │  ├─ utils
+   │  │  └─ format.ts
+   │  └─ vite-env.d.ts
+   ├─ tsconfig.app.json
+   ├─ tsconfig.json
+   ├─ tsconfig.node.json
+   └─ vite.config.ts
 
-Copy `.env.example` to `.env` and point `VITE_API_BASE_URL` at the Go backend
-(e.g. `http://localhost:8080/api/v1`). Until a value is set, the app runs in
-**preview mode** with the mock adapter, and the UI clearly labels simulated
-data.
-
-## Initial API contract (Go backend)
-
-- `GET  /api/v1/rooms/availability` — availability + prices for dates/guests
-- `POST /api/v1/bookings` — create a hotel booking
-- `GET  /api/v1/bookings/{reference}` — booking details (secure token required)
-- `POST /api/v1/bookings/cancel` — cancel with a secure token
-- `GET  /api/v1/restaurant/availability` — available dining slots
-- `POST /api/v1/restaurant/bookings` — create a restaurant reservation
-- `/api/v1/staff/*` — authenticated staff operations
-
-Adjust `src/api/client.ts` if the final routes or payload shapes differ —
-components and hooks do not need to change.
-
-## Deployment
-
-```bash
-npm run build
 ```
-
-Deploy the `dist/` folder to any static host. Set `VITE_API_BASE_URL` at build
-time to the public HTTPS URL of the Go API. The API must send permissive CORS
-headers for the site's origin.
-
-## Replacing placeholder content
-
-- Images: `src/data/images.ts` (all placeholder slots are listed there; the
-  hero photo lives at `public/dharmahouse-hero.jpg`).
-- Names, contact details, policies: `src/data/site.ts`.
-- Room catalog: `src/data/rooms.ts` (superseded by the backend once live).
-- Placeholder texts marked with `[...]` in the Mission and Contact pages.

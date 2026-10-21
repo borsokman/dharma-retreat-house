@@ -1,15 +1,30 @@
-node_modules/
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Environment files
 .env
-vite.config.js.timestamp-*.mjs
-vite.config.mjs.timestamp-*.mjs
-vite.config.cjs.timestamp-*.mjs
-vite.config.ts.timestamp-*.mjs
-vite.config.mts.timestamp-*.mjs
-vite.config.cts.timestamp-*.mjs
-vitest.config.js.timestamp-*.mjs
-vitest.config.mjs.timestamp-*.mjs
-vitest.config.cjs.timestamp-*.mjs
-vitest.config.ts.timestamp-*.mjs
-vitest.config.mts.timestamp-*.mjs
-vitest.config.cts.timestamp-*.mjs
+.env.*
+!.env.example
+
+# Node / dependencies
+node_modules/
+
+# Builds and outputs
 dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+*.db
+*.db-wal
+*.db-shm
