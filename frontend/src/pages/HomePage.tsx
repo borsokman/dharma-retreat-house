@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, HeartHandshake, UtensilsCrossed, Wifi, Tv, Coffee, ParkingSquare } from "lucide-react";
+import { ArrowRight, HeartHandshake, UtensilsCrossed, Wifi, Tv, Coffee, SquareParking as ParkingSquare } from "lucide-react";
 import { BookingWidget } from "../components/BookingWidget";
 import { images } from "../data/images";
 import { rooms } from "../data/rooms";
@@ -65,7 +65,8 @@ export default function HomePage() {
       {/* ---------- Intro ---------- */}
       <section className="section" aria-labelledby="intro-title">
         <div className="container intro">
-          <div className="section-head">
+          <div className="intro__layout">
+            <div className="section-head intro__article">
             <span className="eyebrow">Welcome</span>
             <h2 id="intro-title">A house with heart</h2>
             <p className="lede">
@@ -74,9 +75,20 @@ export default function HomePage() {
               mountain air — and every aspect of your stay supports the school's
               work.
             </p>
-            <Link to="/our-mission" className="btn btn--ghost">
-              Our mission <ArrowRight size={16} aria-hidden="true" />
-            </Link>
+              <Link to="/our-mission" className="btn btn--ghost">
+                Our mission <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+            <div className="intro__logo-wrap">
+              <img
+                src={images.logo}
+                alt="Dharma Retreat House logo"
+                className="intro__logo"
+                width="1024"
+                height="1024"
+                loading="lazy"
+              />
+            </div>
           </div>
           <div className="blob blob--water drifting intro__blob" aria-hidden="true" />
         </div>

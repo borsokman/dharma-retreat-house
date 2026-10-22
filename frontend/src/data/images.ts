@@ -10,6 +10,7 @@ const PLACEHOLDER =
 
 export const images = {
   hero: "/dharmahouse-hero1.jpg",
+  logo: "/logo1.jpg",
   tawang: {
     hero: "/tawang/tawang-hero.jpg",
     welcomeGate: "/tawang/tawang-welcome.jpg",

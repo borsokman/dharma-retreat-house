@@ -141,6 +141,38 @@
   overflow: visible;
 }
 
+.intro__layout {
+  display: grid;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.intro__article,
+.intro__logo-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.intro__article {
+  margin-bottom: 0;
+}
+
+.intro__logo-wrap {
+  display: flex;
+  justify-content: center;
+  order: -1;
+  padding: var(--space-2);
+}
+
+.intro__logo {
+  width: min(100%, 360px);
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
 .intro__blob {
   width: 340px;
   height: 340px;
@@ -148,6 +180,16 @@
   top: -80px;
   border-radius: 50% 30% 70% 40%;
   opacity: 0.8;
+}
+
+@media (min-width: 860px) {
+  .intro__layout {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .intro__logo-wrap {
+    order: 0;
+  }
 }
 
 /* ---------- Featured rooms ---------- */
