@@ -10,6 +10,11 @@ import type { AvailabilityQuery } from "../api/types";
 
 export type BookingTab = "stay" | "buffet";
 
+/** Router state the rooms page receives after an availability search. */
+export interface StayPageState {
+  search: AvailabilityQuery;
+}
+
 interface SearchContext extends AvailabilityQuery {
   date: string;
   time: string;
@@ -43,9 +48,17 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     () => ({
       search,
       update: (patch) => setSearch((s) => ({ ...s, ...patch })),
-      goToStayResults: () =>
-        navigate("/stay", { state: { search: search as AvailabilityQuery } }),
-      goToBuffet: () => navigate("/buffet", { state: { search } }),
+      goToStayResults: () => {
+        const query: AvailabilityQuery = {
+          checkIn: search.checkIn,
+          checkOut: search.checkOut,
+          guests: search.guests,
+          rooms: search.rooms,
+        };
+        navigate("/stay", { state: { search: query } satisfies StayPageState });
+      },
+      // The buffet page reads date / party size straight from this context.
+      goToBuffet: () => navigate("/buffet"),
     }),
     [search, navigate],
   );

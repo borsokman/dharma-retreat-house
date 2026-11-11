@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Users, BedDouble, Ruler, Leaf } from "lucide-react";
+import { Users, BedDouble, Ruler } from "lucide-react";
 import type { AvailabilityQuery, RoomAvailability } from "../api/types";
 import { api, isMockMode } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
-import { formatMoney } from "../utils/format";
+import { formatMoney, pluralize } from "../utils/format";
 import { BookingRequestModal } from "./BookingRequestModal";
 import "./RoomCard.css";
 
@@ -12,15 +12,16 @@ export function AvailabilityResults({ query }: { query: AvailabilityQuery }) {
   const { state, run } = useAsync<RoomAvailability[]>();
   const [selected, setSelected] = useState<RoomAvailability | null>(null);
 
-  useEffect(() => {
-    run(() => api.getAvailability(query));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query.checkIn, query.checkOut, query.guests, query.rooms]);
+  const { checkIn, checkOut, guests, rooms } = query;
+  const search = () =>
+    run(() => api.getAvailability({ checkIn, checkOut, guests, rooms }));
 
-  const results = useMemo(
-    () => (state.kind === "done" ? state.data : null),
-    [state],
-  );
+  useEffect(() => {
+    void search();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkIn, checkOut, guests, rooms]);
+
+  const results = state.kind === "done" ? state.data : null;
 
   if (state.kind === "loading") {
     return (
@@ -39,7 +40,7 @@ export function AvailabilityResults({ query }: { query: AvailabilityQuery }) {
         <button
           type="button"
           className="btn btn--primary"
-          onClick={() => run(() => api.getAvailability(query))}
+          onClick={search}
         >
           Try again
         </button>
@@ -68,11 +69,14 @@ export function AvailabilityResults({ query }: { query: AvailabilityQuery }) {
           Preview mode — availability and prices are simulated
         </p>
       )}
-      {results.map(({ room, available, totalPrice, currency, nights, taxesAndFees }) => (
+      {results.map((result) => {
+        const { room, available, totalPrice, currency, nights, taxesAndFees } =
+          result;
+        return (
         <article
           key={room.slug}
           className={`room-card card card--hover ${available ? "" : "room-card--unavailable"}`}
-          aria-label={`${room.name}${available ? ", available" : ", unavailable"}`}
+          aria-label={`${room.name}, ${available ? "available" : "unavailable"}`}
         >
           <div className="room-card__photo">
             <img
@@ -106,9 +110,13 @@ export function AvailabilityResults({ query }: { query: AvailabilityQuery }) {
                   {formatMoney(totalPrice, currency)}
                 </span>
                 <span className="room-card__nights">
-                  total · {nights} {nights === 1 ? "night" : " nights"}
-                  <br />
-                  incl. {taxesAndFees.map((t) => t.label).join(", ")}
+                  total · {pluralize(nights, "night")}
+                  {taxesAndFees.length > 0 && (
+                    <>
+                      <br />
+                      incl. {taxesAndFees.map((t) => t.label).join(", ")}
+                    </>
+                  )}
                 </span>
               </div>
             )}
@@ -117,7 +125,7 @@ export function AvailabilityResults({ query }: { query: AvailabilityQuery }) {
                 <button
                   type="button"
                   className="btn btn--primary"
-                  onClick={() => setSelected({ room, available, totalPrice, currency, nights, taxesAndFees })}
+                  onClick={() => setSelected(result)}
                 >
                   Reserve this room
                 </button>
@@ -132,7 +140,8 @@ export function AvailabilityResults({ query }: { query: AvailabilityQuery }) {
             </div>
           </div>
         </article>
-      ))}
+        );
+      })}
       {selected && (
         <BookingRequestModal
           selection={selected}
@@ -140,7 +149,6 @@ export function AvailabilityResults({ query }: { query: AvailabilityQuery }) {
           onClose={() => setSelected(null)}
         />
       )}
-      <Leaf aria-hidden="true" className="room-card__leaf" />
     </div>
   );
 }

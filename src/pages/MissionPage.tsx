@@ -2,6 +2,7 @@ import { HeartHandshake, Sprout } from "lucide-react";
 import { Link } from "react-router-dom";
 import { images } from "../data/images";
 import { site } from "../data/site";
+import "./MissionPage.css";
 
 export default function MissionPage() {
   return (

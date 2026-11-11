@@ -89,6 +89,19 @@
 }
 
 /* ---------- Slot picker ---------- */
+.slot-picker {
+  border: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+}
+
+.slot-picker legend {
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: var(--text-soft);
+  margin-bottom: var(--space-2);
+}
+
 .slot-grid {
   display: flex;
   flex-wrap: wrap;

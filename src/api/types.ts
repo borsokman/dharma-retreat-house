@@ -14,6 +14,11 @@ export interface RoomType {
   currency: string;
 }
 
+export interface TaxOrFee {
+  label: string;
+  amount: number;
+}
+
 export interface RoomAvailability {
   room: RoomType;
   available: boolean;
@@ -21,7 +26,7 @@ export interface RoomAvailability {
   totalPrice: number;
   currency: string;
   nights: number;
-  taxesAndFees: { label: string; amount: number }[];
+  taxesAndFees: TaxOrFee[];
 }
 
 export interface AvailabilityQuery {
@@ -58,7 +63,7 @@ export interface HotelBooking {
   guests: number;
   totalPrice: number;
   currency: string;
-  taxesAndFees: { label: string; amount: number }[];
+  taxesAndFees: TaxOrFee[];
   cancellationDeadline: string; // ISO
   refundPolicy: string;
   /** Hosted checkout URL returned by the backend, when payment is required. */
@@ -90,16 +95,4 @@ export interface BuffetBooking {
   time: string;
   partySize: number;
   contact: GuestContact;
-}
-
-export interface ApiError {
-  code:
-    | "network"
-    | "not_found"
-    | "unauthorized"
-    | "invalid"
-    | "gone"
-    | "conflict"
-    | "unavailable";
-  message: string;
 }

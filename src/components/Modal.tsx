@@ -1,5 +1,6 @@
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { X } from "lucide-react";
+import { useDialog } from "../hooks/useDialog";
 import "./Modal.css";
 import "../styles/forms.css";
 
@@ -10,25 +11,17 @@ interface ModalProps {
 }
 
 export function Modal({ title, onClose, children }: ModalProps) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
+  const dialogRef = useDialog<HTMLDivElement>(onClose);
 
   return (
     <div className="modal__backdrop" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal card"
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal__head">

@@ -2,12 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 
 export type Theme = "light" | "dark";
 
+// Keep in sync with the inline theme script in index.html.
 const STORAGE_KEY = "dharma-theme";
 
 function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "light";
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "light" || stored === "dark") return stored;
+  const applied = document.documentElement.getAttribute("data-theme");
+  if (applied === "light" || applied === "dark") return applied;
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
@@ -20,11 +20,19 @@ export function useTheme() {
     const root = document.documentElement;
     root.setAttribute("data-theme", theme);
     root.style.colorScheme = theme;
-    localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 
   const toggle = useCallback(() => {
-    setTheme((t) => (t === "light" ? "dark" : "light"));
+    setTheme((t) => {
+      const next = t === "light" ? "dark" : "light";
+      // Only an explicit choice is remembered; otherwise the OS setting wins.
+      try {
+        localStorage.setItem(STORAGE_KEY, next);
+      } catch {
+        // Storage can be unavailable (private mode, blocked cookies).
+      }
+      return next;
+    });
   }, []);
 
   return { theme, toggle };

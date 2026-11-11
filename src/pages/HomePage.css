@@ -17,18 +17,6 @@
   object-position: center 40%;
 }
 
-.hero__img--dark {
-  display: none;
-}
-
-[data-theme="dark"] .hero__img--light {
-  display: none;
-}
-
-[data-theme="dark"] .hero__img--dark {
-  display: block;
-}
-
 .hero__overlay {
   position: absolute;
   inset: 0;
@@ -156,14 +144,6 @@
   min-height: 48px;
   color: var(--text-soft);
   margin: 0 0 var(--space-2);
-}
-
-.home-nav-card__action svg {
-  transition: transform var(--transition);
-}
-
-.home-nav-card:hover .home-nav-card__action svg {
-  transform: translateX(4px);
 }
 
 @media (min-width: 700px) {

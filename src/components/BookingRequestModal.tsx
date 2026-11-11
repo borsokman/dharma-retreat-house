@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import type {
@@ -9,7 +9,8 @@ import type {
 import { api, isMockMode } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
 import { Modal } from "./Modal";
-import { formatDateLong, formatMoney } from "../utils/format";
+import { ContactFields, emptyContact, isContactComplete } from "./ContactFields";
+import { formatDateLong, formatMoney, formatStatus, pluralize } from "../utils/format";
 
 interface Props {
   selection: RoomAvailability;
@@ -20,32 +21,22 @@ interface Props {
 export function BookingRequestModal({ selection, query, onClose }: Props) {
   const { room, totalPrice, currency, nights, taxesAndFees } = selection;
   const { state, run } = useAsync<HotelBooking>();
-  const [contact, setContact] = useState({ name: "", email: "", phone: "" });
+  const [contact, setContact] = useState(emptyContact);
   const [requests, setRequests] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    if (submitted && state.kind === "done") setSubmitted(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.kind]);
+  const sending = state.kind === "loading";
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    if (sending || !isContactComplete(contact)) return;
     void run(() =>
       api.createHotelBooking({
         availabilityQuery: query,
         roomSlug: room.slug,
         contact,
-        specialRequests: requests || undefined,
+        specialRequests: requests.trim() || undefined,
       }),
     );
   }
-
-  const invalid =
-    !contact.name.trim() ||
-    !/^\S+@\S+\.\S+$/.test(contact.email) ||
-    !contact.phone.trim();
 
   return (
     <Modal title={`Reserve — ${room.name}`} onClose={onClose}>
@@ -58,13 +49,13 @@ export function BookingRequestModal({ selection, query, onClose }: Props) {
               <dt>Dates</dt>
               <dd>
                 {formatDateLong(query.checkIn)} → {formatDateLong(query.checkOut)}{" "}
-                ({nights} {nights === 1 ? "night" : "nights"})
+                ({pluralize(nights, "night")})
               </dd>
             </div>
             <div>
               <dt>Guests</dt>
               <dd>
-                {query.guests} · {query.rooms} {query.rooms === 1 ? "room" : "rooms"}
+                {pluralize(query.guests, "guest")} · {pluralize(query.rooms, "room")}
               </dd>
             </div>
             <div>
@@ -86,51 +77,13 @@ export function BookingRequestModal({ selection, query, onClose }: Props) {
             </div>
           </dl>
 
-          <div className="field">
-            <label htmlFor="bk-name">Full name</label>
-            <input
-              id="bk-name"
-              className="input"
-              required
-              autoComplete="name"
-              value={contact.name}
-              onChange={(e) => setContact((c) => ({ ...c, name: e.target.value }))}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="bk-email">Email</label>
-            <input
-              id="bk-email"
-              className="input"
-              type="email"
-              required
-              autoComplete="email"
-              value={contact.email}
-              onChange={(e) => setContact((c) => ({ ...c, email: e.target.value }))}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="bk-phone">Telephone</label>
-            <input
-              id="bk-phone"
-              className="input"
-              type="tel"
-              required
-              autoComplete="tel"
-              value={contact.phone}
-              onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="bk-requests">Special requests (optional)</label>
-            <textarea
-              id="bk-requests"
-              className="input"
-              rows={3}
-              value={requests}
-              onChange={(e) => setRequests(e.target.value)}
-            />
-          </div>
+          <ContactFields
+            idPrefix="bk"
+            contact={contact}
+            onContactChange={setContact}
+            requests={requests}
+            onRequestsChange={setRequests}
+          />
 
           <p className="confirm-note">
             Free cancellation up to 48 hours before check-in. You'll review the
@@ -147,9 +100,9 @@ export function BookingRequestModal({ selection, query, onClose }: Props) {
             <button
               type="submit"
               className="btn btn--primary btn--block"
-              disabled={invalid || state.kind === "loading" || submitted}
+              disabled={!isContactComplete(contact) || sending}
             >
-              {state.kind === "loading" || submitted ? (
+              {sending ? (
                 <>
                   <span className="spinner" aria-hidden="true" /> Sending…
                 </>
@@ -196,7 +149,7 @@ function BookingConfirmation({ booking }: { booking: HotelBooking }) {
         <div>
           <dt>Total</dt>
           <dd>
-            {formatMoney(booking.totalPrice, booking.currency)} ({booking.status.replace("_", " ")})
+            {formatMoney(booking.totalPrice, booking.currency)} ({formatStatus(booking.status)})
           </dd>
         </div>
       </dl>

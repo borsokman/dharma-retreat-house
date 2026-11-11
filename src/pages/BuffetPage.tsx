@@ -6,7 +6,7 @@ import { useBookingSearch } from "../hooks/useBookingSearch";
 import { BuffetBookingModal } from "../components/BuffetBookingModal";
 import { images } from "../data/images";
 import { policies } from "../data/site";
-import { todayISO } from "../utils/format";
+import { pluralize, range, todayISO } from "../utils/format";
 import type { BuffetSlot } from "../api/types";
 import "./BuffetPage.css";
 
@@ -29,18 +29,19 @@ const menuHighlights = [
 
 export default function BuffetPage() {
   const { search } = useBookingSearch();
-  const { state, run } = useAsync<BuffetSlot[]>();
+  const { state, run, reset } = useAsync<BuffetSlot[]>();
   const [date, setDate] = useState(search.date || todayISO(1));
   const [partySize, setPartySize] = useState(search.partySize);
   const [time, setTime] = useState(search.time);
   const [modalOpen, setModalOpen] = useState(false);
 
-  async function findSlots() {
-    await run(() => api.getBuffetSlots({ date, partySize }));
+  function findSlots() {
+    void run(() => api.getBuffetSlots({ date, partySize }));
   }
 
   const slots = state.kind === "done" ? state.data : null;
-  const chosenSlotExists = slots?.some((s) => s.time === time) ?? false;
+  const openSlots = slots?.filter((s) => s.available) ?? [];
+  const chosenSlotOpen = openSlots.some((s) => s.time === time);
 
   return (
     <>
@@ -119,7 +120,10 @@ export default function BuffetPage() {
                 type="date"
                 min={todayISO()}
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => {
+                  setDate(e.target.value);
+                  reset(); // times shown belong to the previous date
+                }}
               />
             </div>
             <div className="field">
@@ -130,11 +134,14 @@ export default function BuffetPage() {
                   id="rest-party"
                   className="select"
                   value={partySize}
-                  onChange={(e) => setPartySize(Number(e.target.value))}
+                  onChange={(e) => {
+                    setPartySize(Number(e.target.value));
+                    reset();
+                  }}
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                  {range(8).map((n) => (
                     <option key={n} value={n}>
-                      {n} {n === 1 ? "guest" : "guests"}
+                      {pluralize(n, "guest")}
                     </option>
                   ))}
                 </select>
@@ -157,7 +164,7 @@ export default function BuffetPage() {
               type="button"
               className="btn btn--primary"
               onClick={findSlots}
-              disabled={state.kind === "loading"}
+              disabled={state.kind === "loading" || !date}
             >
               {state.kind === "loading" ? (
                 <>
@@ -185,24 +192,21 @@ export default function BuffetPage() {
 
           {slots && (
             <div className="mt-4">
-              {slots.some((s) => s.available) ? (
+              {openSlots.length > 0 ? (
                 <>
                   <h3 className="text-center">Free times on this date</h3>
-                  <div className="slot-grid slot-grid--page" role="list">
-                    {slots
-                      .filter((s) => s.available)
-                      .map((s) => (
-                        <button
-                          key={s.time}
-                          type="button"
-                          role="listitem"
-                          className={`slot ${time === s.time ? "slot--selected" : ""}`}
-                          aria-pressed={time === s.time}
-                          onClick={() => setTime(s.time)}
-                        >
-                          {s.time}
-                        </button>
-                      ))}
+                  <div className="slot-grid slot-grid--page">
+                    {openSlots.map((s) => (
+                      <button
+                        key={s.time}
+                        type="button"
+                        className={`slot ${time === s.time ? "slot--selected" : ""}`}
+                        aria-pressed={time === s.time}
+                        onClick={() => setTime(s.time)}
+                      >
+                        {s.time}
+                      </button>
+                    ))}
                   </div>
                   <div className="text-center mt-4">
                     <button
@@ -210,7 +214,7 @@ export default function BuffetPage() {
                       className="btn btn--sunset"
                       onClick={() => setModalOpen(true)}
                     >
-                      {chosenSlotExists
+                      {chosenSlotOpen
                         ? `Continue with ${time}`
                         : "Choose a time, then continue"}
                     </button>
@@ -243,6 +247,7 @@ export default function BuffetPage() {
           date={date}
           partySize={partySize}
           slots={slots}
+          initialTime={chosenSlotOpen ? time : null}
           onClose={() => setModalOpen(false)}
         />
       )}

@@ -1,36 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { rooms } from "../data/rooms";
 import type { RoomType } from "../api/types";
-import { formatMoney } from "../utils/format";
+import type { StayPageState } from "../hooks/useBookingSearch";
+import { AvailabilityResults } from "../components/AvailabilityResults";
+import { Lightbox } from "../components/Lightbox";
+import { formatDateLong, formatMoney, pluralize } from "../utils/format";
 import "./RoomsPage.css";
 
+function searchFromState(state: unknown) {
+  const search = (state as Partial<StayPageState> | null)?.search;
+  return search?.checkIn && search.checkOut ? search : null;
+}
+
 export default function RoomsPage() {
+  const location = useLocation();
+  const search = searchFromState(location.state);
   const [openRoom, setOpenRoom] = useState<RoomType | null>(null);
-  const [index, setIndex] = useState(0);
-
-  const close = useCallback(() => setOpenRoom(null), []);
-
-  useEffect(() => {
-    if (!openRoom) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") setIndex((i) => (i - 1 + openRoom.photos.length) % openRoom.photos.length);
-      if (e.key === "ArrowRight") setIndex((i) => (i + 1) % openRoom.photos.length);
-    };
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [openRoom, close]);
-
-  function open(room: RoomType) {
-    setOpenRoom(room);
-    setIndex(0);
-  }
 
   return (
     <>
@@ -45,15 +31,37 @@ export default function RoomsPage() {
         </div>
       </section>
 
+      {search && (
+        <section
+          className="section"
+          style={{ paddingTop: "var(--space-4)" }}
+          aria-labelledby="availability-title"
+        >
+          <div className="container">
+            <div className="section-head">
+              <h2 id="availability-title">Your availability</h2>
+              <p className="lede">
+                {formatDateLong(search.checkIn)} →{" "}
+                {formatDateLong(search.checkOut)} ·{" "}
+                {pluralize(search.guests, "guest")} ·{" "}
+                {pluralize(search.rooms, "room")}
+              </p>
+            </div>
+            <AvailabilityResults query={search} />
+          </div>
+        </section>
+      )}
+
       <section className="section" style={{ paddingTop: "var(--space-4)" }}>
         <div className="container">
+          {search && <h2>All rooms</h2>}
           <div className="room-grid">
             {rooms.map((room) => (
               <article key={room.slug} className="room-tile card card--hover">
                 <button
                   type="button"
                   className="room-tile__img"
-                  onClick={() => open(room)}
+                  onClick={() => setOpenRoom(room)}
                   aria-label={`View photos of ${room.name}`}
                 >
                   <img
@@ -78,59 +86,20 @@ export default function RoomsPage() {
       </section>
 
       {openRoom && (
-        <div
-          className="lightbox__backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${openRoom.name} photos`}
-          onClick={close}
-        >
-          <button
-            type="button"
-            className="lightbox__close"
-            onClick={close}
-            aria-label="Close photo gallery"
-          >
-            <X size={24} />
-          </button>
-          <div className="lightbox" onClick={(e) => e.stopPropagation()}>
-            <div className="lightbox__stage">
-              <img
-                src={openRoom.photos[index]}
-                alt={`${openRoom.name} photo ${index + 1} of ${openRoom.photos.length}`}
-              />
-              {openRoom.photos.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    className="lightbox__nav lightbox__nav--prev"
-                    onClick={() =>
-                      setIndex((i) => (i - 1 + openRoom.photos.length) % openRoom.photos.length)
-                    }
-                    aria-label="Previous photo"
-                  >
-                    <ChevronLeft size={28} />
-                  </button>
-                  <button
-                    type="button"
-                    className="lightbox__nav lightbox__nav--next"
-                    onClick={() => setIndex((i) => (i + 1) % openRoom.photos.length)}
-                    aria-label="Next photo"
-                  >
-                    <ChevronRight size={28} />
-                  </button>
-                </>
-              )}
-            </div>
-            <div className="lightbox__info">
+        <Lightbox
+          label={`${openRoom.name} photos`}
+          images={openRoom.photos.map((src, i) => ({
+            src,
+            alt: `${openRoom.name} photo ${i + 1} of ${openRoom.photos.length}`,
+          }))}
+          onClose={() => setOpenRoom(null)}
+          renderInfo={() => (
+            <>
               <h3>{openRoom.name}</h3>
               <p className="lede">{openRoom.shortDescription}</p>
-              <p className="lightbox__count">
-                Photo {index + 1} of {openRoom.photos.length}
-              </p>
-            </div>
-          </div>
-        </div>
+            </>
+          )}
+        />
       )}
     </>
   );

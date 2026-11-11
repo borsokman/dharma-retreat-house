@@ -14,36 +14,35 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="preload"
-      as="image"
-      href="/dharmahouse-hero-light.jpg"
-      fetchpriority="high"
-    />
-    <link rel="preload" as="image" href="/dharmahouse-hero-dark.jpg" />
     <script>
+      // Apply the saved / system theme before first paint (keep the storage
+      // key in sync with src/hooks/useTheme.ts), then preload only the hero
+      // image that the homepage will actually show.
       (function () {
+        var t;
         try {
-          var t = localStorage.getItem("dharma-theme");
-          if (!t) {
-            t = window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light";
-          }
-          document.documentElement.setAttribute("data-theme", t);
-          document.documentElement.style.colorScheme = t;
+          t = localStorage.getItem("dharma-theme");
         } catch (e) {}
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+        var root = document.documentElement;
+        root.setAttribute("data-theme", t);
+        root.style.colorScheme = t;
+
+        var base = "%BASE_URL%";
+        if (location.pathname === base || location.pathname + "/" === base) {
+          var link = document.createElement("link");
+          link.rel = "preload";
+          link.as = "image";
+          link.href = base + "dharmahouse-hero-" + t + ".jpg";
+          link.setAttribute("fetchpriority", "high");
+          document.head.appendChild(link);
+        }
       })();
     </script>
-    <meta
-      property="og:image"
-      content="https://bolt.new/static/og_default.png"
-    />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:image"
-      content="https://bolt.new/static/og_default.png"
-    />
   </head>
   <body>
     <div id="root"></div>

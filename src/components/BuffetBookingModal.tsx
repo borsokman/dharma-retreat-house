@@ -4,41 +4,46 @@ import type { BuffetBooking, BuffetSlot } from "../api/types";
 import { api, isMockMode } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
 import { Modal } from "./Modal";
-import { formatDateLong } from "../utils/format";
+import { ContactFields, emptyContact, isContactComplete } from "./ContactFields";
+import { formatDateLong, pluralize } from "../utils/format";
 
 interface Props {
   date: string;
   partySize: number;
   slots: BuffetSlot[];
+  /** Time already picked on the page, if it is still free. */
+  initialTime?: string | null;
   onClose: () => void;
 }
 
-export function BuffetBookingModal({ date, partySize, slots, onClose }: Props) {
+export function BuffetBookingModal({
+  date,
+  partySize,
+  slots,
+  initialTime = null,
+  onClose,
+}: Props) {
   const { state, run } = useAsync<BuffetBooking>();
-  const [time, setTime] = useState<string | null>(null);
-  const [contact, setContact] = useState({ name: "", email: "", phone: "" });
+  const [time, setTime] = useState<string | null>(initialTime);
+  const [contact, setContact] = useState(emptyContact);
   const [requests, setRequests] = useState("");
+  const sending = state.kind === "loading";
+  const invalid = !time || !isContactComplete(contact);
+  const openSlots = slots.filter((s) => s.available);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!time) return;
+    if (!time || invalid || sending) return;
     void run(() =>
       api.createBuffetBooking({
         date,
         time,
         partySize,
         contact,
-        specialRequests: requests || undefined,
+        specialRequests: requests.trim() || undefined,
       }),
     );
   }
-
-  const invalid =
-    !time ||
-    !contact.name.trim() ||
-    !/^\S+@\S+\.\S+$/.test(contact.email) ||
-    !contact.phone.trim();
-  const openSlots = slots.filter((s) => s.available);
 
   return (
     <Modal title="Reserve a table" onClose={onClose}>
@@ -67,8 +72,7 @@ export function BuffetBookingModal({ date, partySize, slots, onClose }: Props) {
             <div>
               <dt>Party</dt>
               <dd>
-                {state.data.partySize}{" "}
-                {state.data.partySize === 1 ? "guest" : "guests"}
+                {pluralize(state.data.partySize, "guest")}
               </dd>
             </div>
           </dl>
@@ -81,8 +85,7 @@ export function BuffetBookingModal({ date, partySize, slots, onClose }: Props) {
       ) : (
         <form onSubmit={handleSubmit} noValidate>
           <p className="lede">
-            {formatDateLong(date)} · {partySize}{" "}
-            {partySize === 1 ? "guest" : "guests"}
+            {formatDateLong(date)} · {pluralize(partySize, "guest")}
           </p>
           <fieldset className="slot-picker">
             <legend>Choose a time</legend>
@@ -108,57 +111,13 @@ export function BuffetBookingModal({ date, partySize, slots, onClose }: Props) {
             )}
           </fieldset>
 
-          <div className="field">
-            <label htmlFor="rs-name">Full name</label>
-            <input
-              id="rs-name"
-              className="input"
-              required
-              autoComplete="name"
-              value={contact.name}
-              onChange={(e) =>
-                setContact((c) => ({ ...c, name: e.target.value }))
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="rs-email">Email</label>
-            <input
-              id="rs-email"
-              className="input"
-              type="email"
-              required
-              autoComplete="email"
-              value={contact.email}
-              onChange={(e) =>
-                setContact((c) => ({ ...c, email: e.target.value }))
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="rs-phone">Telephone</label>
-            <input
-              id="rs-phone"
-              className="input"
-              type="tel"
-              required
-              autoComplete="tel"
-              value={contact.phone}
-              onChange={(e) =>
-                setContact((c) => ({ ...c, phone: e.target.value }))
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="rs-requests">Special requests (optional)</label>
-            <textarea
-              id="rs-requests"
-              className="input"
-              rows={3}
-              value={requests}
-              onChange={(e) => setRequests(e.target.value)}
-            />
-          </div>
+          <ContactFields
+            idPrefix="rs"
+            contact={contact}
+            onContactChange={setContact}
+            requests={requests}
+            onRequestsChange={setRequests}
+          />
 
           {state.kind === "error" && (
             <p className="error-text" role="alert">
@@ -170,9 +129,9 @@ export function BuffetBookingModal({ date, partySize, slots, onClose }: Props) {
             <button
               type="submit"
               className="btn btn--primary btn--block"
-              disabled={invalid || state.kind === "loading"}
+              disabled={invalid || sending}
             >
-              {state.kind === "loading" ? (
+              {sending ? (
                 <>
                   <span className="spinner" aria-hidden="true" /> Reserving…
                 </>

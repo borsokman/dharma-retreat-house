@@ -55,7 +55,7 @@ export default function StaffDashboardPage() {
           </section>
           <section className="card" aria-labelledby="res-title">
             <h2 id="res-title">
-              <UtensilsCrossed size={20} aria-hidden="true" /> buffet
+              <UtensilsCrossed size={20} aria-hidden="true" /> Buffet
               reservations
             </h2>
             <p className="lede">

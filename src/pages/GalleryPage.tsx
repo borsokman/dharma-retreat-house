@@ -1,17 +1,25 @@
 import { useState } from "react";
 import { images } from "../data/images";
+import { Lightbox } from "../components/Lightbox";
+import "./GalleryPage.css";
 
-const galleryItems = [
-  { key: "monastery", label: "Nearby monastery" },
-  { key: "stupa", label: "Stupa with prayer flags" },
-  { key: "prayerFlags", label: "Prayer flags" },
-  { key: "himalayaSunrise", label: "Himalayan sunrise" },
-  { key: "himalayaMist", label: "Mountain mist" },
-  { key: "goldenHour", label: "Golden hour peaks" },
-  { key: "gardenPath", label: "Garden path" },
-  { key: "gardenFlowers", label: "Wildflowers" },
-  { key: "gardenStone", label: "Stone garden" },
-] as const;
+const galleryItems = (
+  [
+    { key: "monastery", label: "Nearby monastery" },
+    { key: "stupa", label: "Stupa with prayer flags" },
+    { key: "prayerFlags", label: "Prayer flags" },
+    { key: "himalayaSunrise", label: "Himalayan sunrise" },
+    { key: "himalayaMist", label: "Mountain mist" },
+    { key: "goldenHour", label: "Golden hour peaks" },
+    { key: "gardenPath", label: "Garden path" },
+    { key: "gardenFlowers", label: "Wildflowers" },
+    { key: "gardenStone", label: "Stone garden" },
+  ] as const
+).map((item) => ({
+  ...item,
+  src: images.gallery[item.key],
+  alt: `Placeholder — here should be an image of ${item.label}`,
+}));
 
 export default function GalleryPage() {
   const [lightbox, setLightbox] = useState<number | null>(null);
@@ -41,8 +49,8 @@ export default function GalleryPage() {
                 aria-label={`Open image: ${item.label}`}
               >
                 <img
-                  src={images.gallery[item.key]}
-                  alt={`Placeholder — here should be an image of ${item.label}`}
+                  src={item.src}
+                  alt={item.alt}
                   loading="lazy"
                   width="940"
                   height="650"
@@ -55,28 +63,13 @@ export default function GalleryPage() {
       </section>
 
       {lightbox !== null && (
-        <div
-          className="gallery-lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label={galleryItems[lightbox].label}
-          onClick={() => setLightbox(null)}
-        >
-          <figure onClick={(e) => e.stopPropagation()}>
-            <img
-              src={images.gallery[galleryItems[lightbox].key]}
-              alt={`Placeholder — here should be an image of ${galleryItems[lightbox].label}`}
-            />
-            <figcaption>{galleryItems[lightbox].label}</figcaption>
-            <button
-              type="button"
-              className="gallery-lightbox__close"
-              onClick={() => setLightbox(null)}
-            >
-              Close
-            </button>
-          </figure>
-        </div>
+        <Lightbox
+          label="Gallery"
+          images={galleryItems}
+          startIndex={lightbox}
+          onClose={() => setLightbox(null)}
+          renderInfo={(i) => <h3>{galleryItems[i].label}</h3>}
+        />
       )}
     </>
   );

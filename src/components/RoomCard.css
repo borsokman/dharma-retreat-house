@@ -97,10 +97,6 @@
   margin-top: var(--space-1);
 }
 
-.room-card__leaf {
-  display: none;
-}
-
 @media (min-width: 860px) {
   .room-card {
     grid-template-columns: 2fr 3fr;
@@ -108,4 +104,18 @@
   .room-card__photo {
     aspect-ratio: auto;
   }
+}
+
+.avail__list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.avail__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5) 0;
+  color: var(--text-soft);
 }

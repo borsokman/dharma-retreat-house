@@ -11,6 +11,30 @@ type NavbarProps = {
   onToggleTheme: () => void;
 };
 
+function ThemeToggle({
+  theme,
+  onToggle,
+  className = "",
+}: {
+  theme: Theme;
+  onToggle: () => void;
+  className?: string;
+}) {
+  const label =
+    theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+  return (
+    <button
+      type="button"
+      className={`nav__theme ${className}`}
+      aria-label={label}
+      title={label}
+      onClick={onToggle}
+    >
+      {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+    </button>
+  );
+}
+
 export function Navbar({ theme, onToggleTheme }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -52,37 +76,17 @@ export function Navbar({ theme, onToggleTheme }: NavbarProps) {
               {link.label}
             </NavLink>
           ))}
-          <button
-            type="button"
-            className="nav__theme"
-            aria-label={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-            }
-            title={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-            }
-            onClick={onToggleTheme}
-          >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <Link to="/stay" className="btn btn--sunset btn--sm">
             Book Now
           </Link>
         </nav>
         <div className="nav__actions">
-          <button
-            type="button"
-            className="nav__theme nav__theme--mobile"
-            aria-label={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-            }
-            title={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-            }
-            onClick={onToggleTheme}
-          >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
+          <ThemeToggle
+            theme={theme}
+            onToggle={onToggleTheme}
+            className="nav__theme--mobile"
+          />
           <button
             type="button"
             className="nav__toggle"

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Wifi, Tv, Coffee, ParkingSquare, ArrowRight } from "lucide-react";
 import { BookingWidget } from "../components/BookingWidget";
 import { images } from "../data/images";
-// import { site } from "../data/site";
+import { useSiteTheme } from "../layouts/SiteLayout";
 import "./HomePage.css";
 
 type NavigationCard = {
@@ -106,26 +106,17 @@ function NavigationCardView({ card }: { card: NavigationCard }) {
 }
 
 export default function HomePage() {
+  const theme = useSiteTheme();
+
   return (
     <>
       {/* ---------- Full-screen hero ---------- */}
       <section className="hero" aria-label="Welcome">
-        <picture>
-          <source
-            media="(max-width: 760px)"
-            srcSet={`${images.heroLight}?w=900`}
-          />
-          <img
-            src={images.heroLight}
-            alt="Dharma Retreat House lit up in the evening"
-            className="hero__img hero__img--light"
-          />
-        </picture>
+        {/* Only the image for the active theme is downloaded. */}
         <img
-          src={images.heroDark}
-          alt=""
-          aria-hidden="true"
-          className="hero__img hero__img--dark"
+          src={theme === "dark" ? images.heroDark : images.heroLight}
+          alt="Dharma Retreat House lit up in the evening"
+          className="hero__img"
         />
         <div className="hero__overlay" aria-hidden="true" />
         <div className="hero__content container">
@@ -146,7 +137,7 @@ export default function HomePage() {
       {/* ---------- Navigation cards ---------- */}
       <section
         className="section home-navigation"
-        aria-labelledby="home-navigation-title"
+        aria-label="Explore the house"
       >
         <div className="container">
           <div className="home-nav-grid">
@@ -161,7 +152,9 @@ export default function HomePage() {
       <section className="section" aria-labelledby="amenities-title">
         <div className="container">
           <div className="section-head section-head--center">
-            <span className="eyebrow">Homestay Comforts</span>
+            <span className="eyebrow" id="amenities-title">
+              Homestay Comforts
+            </span>
           </div>
           <div className="amenities">
             {amenities.map((a) => (
@@ -179,7 +172,9 @@ export default function HomePage() {
       <section className="section section--sage" aria-labelledby="quotes-title">
         <div className="container">
           <div className="section-head section-head--center">
-            <span className="eyebrow">Guest words</span>
+            <span className="eyebrow" id="quotes-title">
+              Guest words
+            </span>
           </div>
           <div className="quotes">
             <figure className="card card--hover quote">

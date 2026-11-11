@@ -23,7 +23,8 @@ export const navLinks = [
   { label: "Rooms", to: "/stay" },
   { label: "Buffet", to: "/buffet" },
   { label: "Explore Tawang", to: "/tawang" },
-  { label: "Dharma Coffee House & Library", to: "/partner" },
+  // The Dharma Coffee House & Library page is not live yet — add its link
+  // here once its route is enabled in App.tsx.
   { label: "Our Mission", to: "/our-mission" },
   { label: "Gallery", to: "/gallery" },
   { label: "Contact", to: "/contact" },
@@ -37,3 +38,17 @@ export const policies = {
   buffetCancellation:
     "Tables are held for 15 minutes past the reservation time. Cancel any time up to 2 hours before your reservation.",
 };
+
+/** Buffet seating times offered by the kitchen (HH:mm). */
+export const buffetTimes = [
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+];

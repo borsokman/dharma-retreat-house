@@ -8,8 +8,14 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 import { useBookingSearch, type BookingTab } from "../hooks/useBookingSearch";
-import { todayISO } from "../utils/format";
+import { buffetTimes } from "../data/site";
+import { pluralize, range, todayISO } from "../utils/format";
 import "./BookingWidget.css";
+
+const tabs: { id: BookingTab; label: string; icon: typeof BedDouble }[] = [
+  { id: "stay", label: "Stay", icon: BedDouble },
+  { id: "buffet", label: "Buffet", icon: UtensilsCrossed },
+];
 
 export function BookingWidget({
   variant = "hero",
@@ -59,30 +65,23 @@ export function BookingWidget({
       aria-label="Booking search"
     >
       <div className="widget__tabs" role="tablist" aria-label="Booking type">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "stay"}
-          className={`widget__tab ${tab === "stay" ? "widget__tab--active" : ""}`}
-          onClick={() => {
-            setTab("stay");
-            setError(null);
-          }}
-        >
-          <BedDouble size={18} aria-hidden="true" /> Stay
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "buffet"}
-          className={`widget__tab ${tab === "buffet" ? "widget__tab--active" : ""}`}
-          onClick={() => {
-            setTab("buffet");
-            setError(null);
-          }}
-        >
-          <UtensilsCrossed size={18} aria-hidden="true" /> Buffet
-        </button>
+        {tabs.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            id={`tab-${id}`}
+            aria-selected={tab === id}
+            aria-controls={tab === id ? `panel-${id}` : undefined}
+            className={`widget__tab ${tab === id ? "widget__tab--active" : ""}`}
+            onClick={() => {
+              setTab(id);
+              setError(null);
+            }}
+          >
+            <Icon size={18} aria-hidden="true" /> {label}
+          </button>
+        ))}
       </div>
 
       <div className="widget__body">
@@ -90,7 +89,7 @@ export function BookingWidget({
           <div
             id="panel-stay"
             role="tabpanel"
-            aria-label="Room availability search"
+            aria-labelledby="tab-stay"
             className="widget__fields"
           >
             <div className="field">
@@ -139,9 +138,9 @@ export function BookingWidget({
                   value={search.guests}
                   onChange={(e) => update({ guests: Number(e.target.value) })}
                 >
-                  {[1, 2, 3, 4, 5, 6].map((n) => (
+                  {range(6).map((n) => (
                     <option key={n} value={n}>
-                      {n} {n === 1 ? "guest" : "guests"}
+                      {pluralize(n, "guest")}
                     </option>
                   ))}
                 </select>
@@ -155,9 +154,9 @@ export function BookingWidget({
                 value={search.rooms}
                 onChange={(e) => update({ rooms: Number(e.target.value) })}
               >
-                {[1, 2, 3].map((n) => (
+                {range(3).map((n) => (
                   <option key={n} value={n}>
-                    {n} {n === 1 ? "room" : "rooms"}
+                    {pluralize(n, "room")}
                   </option>
                 ))}
               </select>
@@ -174,7 +173,7 @@ export function BookingWidget({
           <div
             id="panel-buffet"
             role="tabpanel"
-            aria-label="Table reservation search"
+            aria-labelledby="tab-buffet"
             className="widget__fields"
           >
             <div className="field">
@@ -201,18 +200,7 @@ export function BookingWidget({
                   value={search.time}
                   onChange={(e) => update({ time: e.target.value })}
                 >
-                  {[
-                    "12:00",
-                    "12:30",
-                    "13:00",
-                    "13:30",
-                    "18:00",
-                    "18:30",
-                    "19:00",
-                    "19:30",
-                    "20:00",
-                    "20:30",
-                  ].map((t) => (
+                  {buffetTimes.map((t) => (
                     <option key={t} value={t}>
                       {t}
                     </option>
@@ -232,9 +220,9 @@ export function BookingWidget({
                     update({ partySize: Number(e.target.value) })
                   }
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                  {range(8).map((n) => (
                     <option key={n} value={n}>
-                      {n} {n === 1 ? "guest" : "guests"}
+                      {pluralize(n, "guest")}
                     </option>
                   ))}
                 </select>

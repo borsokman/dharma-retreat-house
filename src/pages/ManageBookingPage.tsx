@@ -3,26 +3,40 @@ import { KeyRound } from "lucide-react";
 import { api, isMockMode } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
 import type { HotelBooking } from "../api/types";
-import { formatDateLong, formatMoney } from "../utils/format";
+import { formatDateLong, formatMoney, formatStatus } from "../utils/format";
 import "./ManageBookingPage.css";
 
 export default function ManageBookingPage() {
-  const { state, run } = useAsync<HotelBooking>();
+  const lookupAsync = useAsync<HotelBooking>();
+  const cancelAsync = useAsync<HotelBooking>();
   const [reference, setReference] = useState("");
   const [token, setToken] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+
+  const lookupState = lookupAsync.state;
+  const cancelState = cancelAsync.state;
 
   function lookup(e: FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
-    void run(() => api.getHotelBooking(reference.trim(), token.trim()));
+    cancelAsync.reset();
+    void lookupAsync.run(() =>
+      api.getHotelBooking(reference.trim(), token.trim()),
+    );
   }
 
-  async function cancel() {
-    void run(() => api.cancelHotelBooking(reference.trim(), token.trim()));
+  function cancel() {
+    void cancelAsync.run(() =>
+      api.cancelHotelBooking(reference.trim(), token.trim()),
+    );
   }
 
-  const booking = state.kind === "done" ? state.data : null;
+  // After a successful cancellation, show the updated booking.
+  const booking =
+    cancelState.kind === "done"
+      ? cancelState.data
+      : lookupState.kind === "done"
+        ? lookupState.data
+        : null;
+  const cancelling = cancelState.kind === "loading";
 
   return (
     <>
@@ -68,18 +82,18 @@ export default function ManageBookingPage() {
                 references and secure codes.
               </p>
             )}
-            {state.kind === "error" && (
+            {lookupState.kind === "error" && (
               <p className="error-text" role="alert">
-                {state.message}
+                {lookupState.message}
               </p>
             )}
             <button
               type="submit"
               className="btn btn--primary btn--block"
-              disabled={state.kind === "loading"}
+              disabled={lookupState.kind === "loading"}
             >
               <KeyRound size={17} aria-hidden="true" />
-              {state.kind === "loading" ? "Looking…" : "Find my booking"}
+              {lookupState.kind === "loading" ? "Looking…" : "Find my booking"}
             </button>
           </form>
 
@@ -101,7 +115,7 @@ export default function ManageBookingPage() {
                 <div>
                   <dt>Status</dt>
                   <dd className="badge badge--sage">
-                    {booking.status.replace("_", " ")}
+                    {formatStatus(booking.status)}
                   </dd>
                 </div>
                 <div>
@@ -114,6 +128,11 @@ export default function ManageBookingPage() {
                 {formatDateLong(booking.cancellationDeadline)}
               </p>
               <p className="lede">{booking.refundPolicy}</p>
+              {cancelState.kind === "error" && (
+                <p className="error-text" role="alert">
+                  {cancelState.message}
+                </p>
+              )}
               {booking.status === "cancelled" ? (
                 <p className="badge badge--clay">This booking is cancelled.</p>
               ) : (
@@ -121,15 +140,15 @@ export default function ManageBookingPage() {
                   type="button"
                   className="btn btn--sunset"
                   onClick={cancel}
-                  disabled={state.kind === "loading"}
+                  disabled={cancelling}
                 >
-                  {state.kind === "loading" ? "Cancelling…" : "Cancel this booking"}
+                  {cancelling ? "Cancelling…" : "Cancel this booking"}
                 </button>
               )}
             </div>
           )}
 
-          {state.kind === "idle" && !submitted && (
+          {lookupState.kind === "idle" && (
             <div className="card manage-hint">
               <h3>Where do I find these?</h3>
               <p className="lede">

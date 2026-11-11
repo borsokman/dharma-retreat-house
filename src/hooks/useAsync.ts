@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type AsyncState<T> =
   | { kind: "idle" }
@@ -6,26 +6,33 @@ export type AsyncState<T> =
   | { kind: "error"; message: string }
   | { kind: "done"; data: T };
 
-/** Small state machine for API calls: idle → loading → done | error. */
+/**
+ * Small state machine for API calls: idle → loading → done | error.
+ * Only the most recent call may update state, so a slow, outdated response
+ * can never overwrite a newer one.
+ */
 export function useAsync<T>() {
   const [state, setState] = useState<AsyncState<T>>({ kind: "idle" });
-  const cancelled = useRef(false);
+  const mounted = useRef(false);
+  const latestCall = useRef(0);
 
   useEffect(() => {
-    cancelled.current = false;
+    mounted.current = true;
     return () => {
-      cancelled.current = true;
+      mounted.current = false;
     };
   }, []);
 
-  async function run(fn: () => Promise<T>) {
+  const run = useCallback(async (fn: () => Promise<T>) => {
+    const call = ++latestCall.current;
+    const isCurrent = () => mounted.current && call === latestCall.current;
     setState({ kind: "loading" });
     try {
       const data = await fn();
-      if (!cancelled.current) setState({ kind: "done", data });
+      if (isCurrent()) setState({ kind: "done", data });
       return data;
     } catch (err) {
-      if (!cancelled.current)
+      if (isCurrent())
         setState({
           kind: "error",
           message:
@@ -35,11 +42,12 @@ export function useAsync<T>() {
         });
       return undefined;
     }
-  }
+  }, []);
 
-  function reset() {
+  const reset = useCallback(() => {
+    latestCall.current++;
     setState({ kind: "idle" });
-  }
+  }, []);
 
   return { state, run, reset };
 }

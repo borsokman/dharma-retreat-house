@@ -1,17 +1,8 @@
 import type { ApiClient } from "./contract";
-import type {
-  AvailabilityQuery,
-  HotelBooking,
-  HotelBookingRequest,
-  BuffetAvailabilityQuery,
-  BuffetBooking,
-  BuffetBookingRequest,
-  BuffetSlot,
-  RoomAvailability,
-  RoomType,
-} from "./types";
+import type { AvailabilityQuery, RoomType } from "./types";
 import { rooms as staticRooms } from "../data/rooms";
-import { policies } from "../data/site";
+import { buffetTimes, policies } from "../data/site";
+import { addDaysISO, nightsBetween } from "../utils/format";
 
 /**
  * Mock API adapter — clearly isolated preview implementation.
@@ -28,18 +19,6 @@ function delay<T>(value: T, ms = MOCK_LATENCY_MS): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }
 
-function todayPlus(days: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
-}
-
-function nightsBetween(checkIn: string, checkOut: string): number {
-  const a = new Date(checkIn + "T00:00:00").getTime();
-  const b = new Date(checkOut + "T00:00:00").getTime();
-  return Math.max(1, Math.round((b - a) / 86_400_000));
-}
-
 /** Deterministic pseudo-availability so previews are stable per date. */
 function seededAvailable(seed: string): boolean {
   let h = 0;
@@ -54,124 +33,97 @@ function reference(prefix: string): string {
   return `${prefix}-${rand}`;
 }
 
-function makeTaxesAndFees(base: number, nights: number) {
-  const roomTotal = base * nights;
-  return [
-    { label: "City tax", amount: Math.round(roomTotal * 0.03 * 100) / 100 },
-    {
-      label: "Service charge",
-      amount: Math.round(roomTotal * 0.05 * 100) / 100,
-    },
+const roundCents = (n: number) => Math.round(n * 100) / 100;
+
+/** Simulated price breakdown for a stay. */
+function quote(room: RoomType, query: AvailabilityQuery) {
+  const nights = Math.max(1, nightsBetween(query.checkIn, query.checkOut));
+  const roomTotal = room.basePrice * nights * query.rooms;
+  const taxesAndFees = [
+    { label: "City tax", amount: roundCents(roomTotal * 0.03) },
+    { label: "Service charge", amount: roundCents(roomTotal * 0.05) },
   ];
+  const taxTotal = taxesAndFees.reduce((sum, t) => sum + t.amount, 0);
+  return {
+    nights,
+    taxesAndFees,
+    currency: room.currency,
+    totalPrice: roundCents(roomTotal + taxTotal),
+  };
 }
 
 export const mockApiClient: ApiClient = {
-  listRooms(): Promise<RoomType[]> {
+  listRooms() {
     return delay(staticRooms);
   },
 
-  async getRoom(slug: string): Promise<RoomType | null> {
+  getRoom(slug) {
     return delay(staticRooms.find((r) => r.slug === slug) ?? null, 250);
   },
 
-  async getAvailability(query: AvailabilityQuery): Promise<RoomAvailability[]> {
-    const nights = nightsBetween(query.checkIn, query.checkOut);
+  getAvailability(query) {
     return delay(
       staticRooms
         .filter((r) => r.maxGuests * query.rooms >= query.guests)
-        .map((room) => {
-          const available = seededAvailable(room.slug + query.checkIn);
-          const roomTotal = room.basePrice * nights * query.rooms;
-          const taxesAndFees = makeTaxesAndFees(
-            room.basePrice * query.rooms,
-            nights,
-          );
-          const taxTotal = taxesAndFees.reduce((s, t) => s + t.amount, 0);
-          return {
-            room,
-            available,
-            nights,
-            currency: room.currency,
-            taxesAndFees,
-            totalPrice: Math.round((roomTotal + taxTotal) * 100) / 100,
-          };
-        }),
+        .map((room) => ({
+          room,
+          available: seededAvailable(room.slug + query.checkIn),
+          ...quote(room, query),
+        })),
     );
   },
 
-  async createHotelBooking(req: HotelBookingRequest): Promise<HotelBooking> {
+  async createHotelBooking(req) {
     const room = staticRooms.find((r) => r.slug === req.roomSlug);
     if (!room) throw new Error("Room not found");
-    const nights = nightsBetween(
-      req.availabilityQuery.checkIn,
-      req.availabilityQuery.checkOut,
+    const { checkIn, checkOut, guests } = req.availabilityQuery;
+    const { totalPrice, currency, taxesAndFees } = quote(
+      room,
+      req.availabilityQuery,
     );
-    const roomTotal = room.basePrice * nights * req.availabilityQuery.rooms;
-    const taxesAndFees = makeTaxesAndFees(
-      room.basePrice * req.availabilityQuery.rooms,
-      nights,
-    );
-    const taxTotal = taxesAndFees.reduce((s, t) => s + t.amount, 0);
-    const deadline = new Date();
-    deadline.setHours(deadline.getHours() - 48);
     return delay({
       reference: reference("DRH"),
-      status: "confirmed",
+      status: "confirmed" as const,
       roomName: room.name,
-      checkIn: req.availabilityQuery.checkIn,
-      checkOut: req.availabilityQuery.checkOut,
-      guests: req.availabilityQuery.guests,
-      totalPrice: Math.round((roomTotal + taxTotal) * 100) / 100,
-      currency: room.currency,
+      checkIn,
+      checkOut,
+      guests,
+      totalPrice,
+      currency,
       taxesAndFees,
-      cancellationDeadline: todayPlus(2),
+      // Free cancellation ends 48 hours before check-in.
+      cancellationDeadline: addDaysISO(checkIn, -2),
       refundPolicy: policies.cancellation,
-      // Simulated hosted-checkout placeholder. The real backend returns a
-      // payment provider URL when payment is required.
+      // The real backend returns a payment provider URL when payment is required.
       paymentUrl: undefined,
     });
   },
 
-  getHotelBooking(_reference: string, _token: string): Promise<HotelBooking> {
+  async getHotelBooking() {
     throw new Error(
       "Lookup is not available in preview mode: the real backend verifies booking references and secure tokens.",
     );
   },
 
-  cancelHotelBooking(
-    _reference: string,
-    _token: string,
-  ): Promise<HotelBooking> {
+  async cancelHotelBooking() {
     throw new Error(
       "Cancellation is not available in preview mode: the real backend verifies secure cancellation tokens.",
     );
   },
 
-  getBuffetSlots(query: BuffetAvailabilityQuery): Promise<BuffetSlot[]> {
-    const times = [
-      "12:00",
-      "12:30",
-      "13:00",
-      "13:30",
-      "18:00",
-      "18:30",
-      "19:00",
-      "19:30",
-      "20:00",
-      "20:30",
-    ];
+  getBuffetSlots(query) {
     return delay(
-      times.map((time) => ({
+      buffetTimes.map((time) => ({
         time,
         available: seededAvailable(time + query.date + query.partySize),
       })),
     );
   },
 
-  async createBuffetBooking(req: BuffetBookingRequest): Promise<BuffetBooking> {
+  createBuffetBooking(req) {
     return delay({
       reference: reference("RST"),
-      status: "confirmed",
+      status: "confirmed" as const,
       date: req.date,
       time: req.time,
       partySize: req.partySize,

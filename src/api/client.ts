@@ -1,5 +1,4 @@
 import type { ApiClient } from "./contract";
-import type { RoomType } from "./types";
 import { mockApiClient } from "./mock";
 
 /**
@@ -10,16 +9,17 @@ import { mockApiClient } from "./mock";
  *   is simulated.
  * - The real HTTP implementation (httpApiClient below) is the starting
  *   point for the Go API contract — fill in the exact routes/payloads
- *   agreed with the backend and switch USE_MOCK to false.
+ *   agreed with the backend and set VITE_API_BASE_URL.
  */
-const USE_MOCK = !import.meta.env.VITE_API_BASE_URL;
-
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
-class ApiRequestError extends Error {
+export const isMockMode = !BASE_URL;
+
+export class ApiRequestError extends Error {
   status: number;
   constructor(status: number, message: string) {
     super(message);
+    this.name = "ApiRequestError";
     this.status = status;
   }
 }
@@ -28,8 +28,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${BASE_URL}${path}`, {
-      headers: { "Content-Type": "application/json", ...options.headers },
       ...options,
+      headers: { "Content-Type": "application/json", ...options.headers },
     });
   } catch {
     throw new ApiRequestError(0, "Network error — please try again.");
@@ -44,57 +44,63 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+const query = (params: Record<string, string | number>) =>
+  new URLSearchParams(
+    Object.entries(params).map(([k, v]) => [k, String(v)]),
+  ).toString();
+
+const post = <T>(path: string, body: unknown) =>
+  request<T>(path, { method: "POST", body: JSON.stringify(body) });
+
 export const httpApiClient: ApiClient = {
   listRooms: () => request("/rooms"),
 
-  getRoom: (slug) => request<RoomType>(`/rooms/${slug}`),
+  getRoom: (slug) =>
+    request<Awaited<ReturnType<ApiClient["getRoom"]>>>(
+      `/rooms/${encodeURIComponent(slug)}`,
+    ).catch((err) => {
+      if (err instanceof ApiRequestError && err.status === 404) return null;
+      throw err;
+    }),
 
   // The methods below mirror the initial API contract. Adjust paths and
   // payload shapes here when the Go API is finalized — components and
   // hooks stay untouched.
-  getAvailability: (query) =>
+  getAvailability: (q) =>
     request(
-      `/rooms/availability?check_in=${query.checkIn}&check_out=${query.checkOut}&guests=${query.guests}&rooms=${query.rooms}`,
+      `/rooms/availability?${query({
+        check_in: q.checkIn,
+        check_out: q.checkOut,
+        guests: q.guests,
+        rooms: q.rooms,
+      })}`,
     ),
   createHotelBooking: (req) =>
-    request("/bookings", {
-      method: "POST",
-      body: JSON.stringify({
-        room_slug: req.roomSlug,
-        check_in: req.availabilityQuery.checkIn,
-        check_out: req.availabilityQuery.checkOut,
-        guests: req.availabilityQuery.guests,
-        rooms: req.availabilityQuery.rooms,
-        contact: req.contact,
-        special_requests: req.specialRequests,
-      }),
+    post("/bookings", {
+      room_slug: req.roomSlug,
+      check_in: req.availabilityQuery.checkIn,
+      check_out: req.availabilityQuery.checkOut,
+      guests: req.availabilityQuery.guests,
+      rooms: req.availabilityQuery.rooms,
+      contact: req.contact,
+      special_requests: req.specialRequests,
     }),
   getHotelBooking: (ref, token) =>
-    request(`/bookings/${ref}?token=${encodeURIComponent(token)}`),
+    request(`/bookings/${encodeURIComponent(ref)}?${query({ token })}`),
   cancelHotelBooking: (ref, token) =>
-    request("/bookings/cancel", {
-      method: "POST",
-      body: JSON.stringify({ reference: ref, token }),
-    }),
-  getBuffetSlots: (query) =>
+    post("/bookings/cancel", { reference: ref, token }),
+  getBuffetSlots: (q) =>
     request(
-      `/buffet/availability?date=${query.date}&party_size=${query.partySize}`,
+      `/buffet/availability?${query({ date: q.date, party_size: q.partySize })}`,
     ),
   createBuffetBooking: (req) =>
-    request("/buffet/bookings", {
-      method: "POST",
-      body: JSON.stringify({
-        date: req.date,
-        time: req.time,
-        party_size: req.partySize,
-        contact: req.contact,
-        special_requests: req.specialRequests,
-      }),
+    post("/buffet/bookings", {
+      date: req.date,
+      time: req.time,
+      party_size: req.partySize,
+      contact: req.contact,
+      special_requests: req.specialRequests,
     }),
 };
 
-export const api: ApiClient = USE_MOCK ? mockApiClient : httpApiClient;
-
-export const isMockMode = USE_MOCK;
-
-export { ApiRequestError };
+export const api: ApiClient = isMockMode ? mockApiClient : httpApiClient;

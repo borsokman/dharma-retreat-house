@@ -1,16 +1,19 @@
-import { Outlet, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Outlet, useOutletContext } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
-import { useTheme } from "../hooks/useTheme";
+import { useTheme, type Theme } from "../hooks/useTheme";
+
+interface SiteLayoutContext {
+  theme: Theme;
+}
+
+/** Current theme for pages rendered inside SiteLayout. */
+export function useSiteTheme(): Theme {
+  return useOutletContext<SiteLayoutContext>().theme;
+}
 
 export function SiteLayout() {
-  const { pathname } = useLocation();
   const { theme, toggle } = useTheme();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
 
   return (
     <>
@@ -19,7 +22,7 @@ export function SiteLayout() {
       </a>
       <Navbar theme={theme} onToggleTheme={toggle} />
       <main id="main">
-        <Outlet />
+        <Outlet context={{ theme } satisfies SiteLayoutContext} />
       </main>
       <Footer />
     </>
