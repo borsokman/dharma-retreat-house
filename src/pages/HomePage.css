@@ -232,3 +232,15 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* ---------- Logo ---------- */
+.home-logo {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) var(--space-3) 0;
+}
+
+.home-logo__img {
+  width: min(400px, 80vw);
+  height: auto;
+}

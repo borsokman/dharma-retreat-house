@@ -12,6 +12,8 @@ const publicAsset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 export const images = {
   heroLight: publicAsset("dharmahouse-hero-light.jpg"),
   heroDark: publicAsset("dharmahouse-hero-dark.jpg"),
+  logoLight: publicAsset("logo-light.webp"),
+  logoDark: publicAsset("logo-dark.webp"),
   tawang: {
     hero: publicAsset("tawang/tawang-hero.jpg"),
     map: publicAsset("tawang/tawang-map.jpg"),

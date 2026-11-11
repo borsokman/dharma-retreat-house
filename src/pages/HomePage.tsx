@@ -148,6 +148,19 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ---------- Logo ---------- */}
+      <section className="home-logo" aria-label="Dharma Retreat House">
+        <img
+          src={theme === "dark" ? images.logoDark : images.logoLight}
+          alt="Dharma Retreat House logo"
+          className="home-logo__img"
+          width="800"
+          height="646"
+          loading="lazy"
+          decoding="async"
+        />
+      </section>
+
       {/* ---------- Amenities ---------- */}
       <section className="section" aria-labelledby="amenities-title">
         <div className="container">

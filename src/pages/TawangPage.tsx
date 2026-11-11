@@ -277,7 +277,7 @@ const ilpColumns: {
 
 const reachBlocks: Block[] = [
   {
-    title: "How to reach Tawang by air",
+    title: "Reaching Tawang by air",
     paragraphs: [
       "The nearest international airport from Tawang is Lokpriya Gopinath Bordoloi International Airport, Guwahati, roughly 480 km from Tawang. It is well connected with major cities like Delhi, Mumbai, Kolkata, Bengaluru, Hyderabad, Chennai and many others.",
     ],
