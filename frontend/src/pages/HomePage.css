@@ -71,8 +71,20 @@
   margin-bottom: var(--space-6);
 }
 
-.hero__content .widget {
-  margin-top: var(--space-2);
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+
+.hero__actions .hero__ghost {
+  color: #f9f6f0;
+  box-shadow: inset 0 0 0 2px rgba(249, 246, 240, 0.7);
+}
+
+.hero__actions .hero__ghost:hover {
+  color: #f9f6f0;
+  background: rgba(249, 246, 240, 0.14);
 }
 
 @media (max-width: 759px) {
@@ -115,7 +127,7 @@
 }
 
 .home-nav-card__image {
-  aspect-ratio: 4 / 2;
+  aspect-ratio: 16 / 10;
   border-radius: var(--radius-sm, 8px);
 }
 

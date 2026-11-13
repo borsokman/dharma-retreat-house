@@ -1,6 +1,10 @@
 import { StrictMode, useLayoutEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, useLocation, useNavigationType } from "react-router-dom";
+import {
+  BrowserRouter,
+  useLocation,
+  useNavigationType,
+} from "react-router-dom";
 import App from "./App";
 import "./styles/global.css";
 
@@ -68,6 +72,16 @@ function ScrollManager() {
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "");
 
+/** Fades out the loading screen from index.html once the app is on screen. */
+function hideBootScreen() {
+  const boot = document.getElementById("boot");
+  if (!boot) return;
+  boot.classList.add("boot--done");
+  const remove = () => boot.remove();
+  boot.addEventListener("transitionend", remove, { once: true });
+  window.setTimeout(remove, 600); // reduced motion: no transition event
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter basename={basename}>
@@ -75,4 +89,20 @@ createRoot(document.getElementById("root")!).render(
       <App />
     </BrowserRouter>
   </StrictMode>,
+);
+
+// Wait until the first render is painted and, on the homepage, until the
+// hero photo has arrived (at most 3 s), so the fade never reveals a blank hero.
+requestAnimationFrame(() =>
+  requestAnimationFrame(() => {
+    const hero = document.querySelector<HTMLImageElement>(".hero__img");
+    if (!hero || hero.complete) return hideBootScreen();
+    const timer = window.setTimeout(hideBootScreen, 3000);
+    const done = () => {
+      window.clearTimeout(timer);
+      hideBootScreen();
+    };
+    hero.addEventListener("load", done, { once: true });
+    hero.addEventListener("error", done, { once: true });
+  }),
 );

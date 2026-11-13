@@ -3,8 +3,12 @@ import { images } from "../data/images";
 
 /**
  * Static room catalog. With the mock adapter this is the demo inventory;
- * once the Go backend is live, rooms, descriptions and photos come from it.
+ * once the backend is live, rooms, descriptions and photos come from it.
  */
+
+/** Every room sleeps at most 2 (backend: rooms.max_guests); the house has 12 rooms. */
+export const MAX_GUESTS_PER_ROOM = 2;
+export const TOTAL_ROOMS = 12;
 export const rooms: RoomType[] = [
   {
     slug: "luxury-suite",
@@ -13,7 +17,7 @@ export const rooms: RoomType[] = [
       "Room No: 205 — private balcony with panoramic mountain views and a separate living lounge.",
     description:
       "Our finest room. The Luxury Suite opens onto a private balcony with panoramic mountain views and offers a separate living area with a peaceful seating lounge — room 205, at the top of the house.",
-    maxGuests: 3,
+    maxGuests: 2,
     bedType: "King bed",
     sizeSqm: 45,
     amenities: [

@@ -1,9 +1,16 @@
+import { useState } from "react";
 import { ExternalLink, Info, MapPin, Star } from "lucide-react";
+import { Lightbox } from "../components/Lightbox";
 import { images } from "../data/images";
 import { site } from "../data/site";
 import "./CoffeeHousePage.css";
 
+// The first photo is the large one beside the intro; the rest form the row.
 const photos = [
+  {
+    src: images.coffeeHouse.exterior,
+    alt: "The wooden front of Dharma Coffee House & Library",
+  },
   {
     src: images.coffeeHouse.libraryCorner,
     alt: "Wicker armchairs in front of shelves of books and cups",
@@ -19,7 +26,39 @@ const photos = [
   },
 ];
 
+function PhotoButton({
+  index,
+  className,
+  onOpen,
+  lazy = true,
+}: {
+  index: number;
+  className: string;
+  onOpen: (index: number) => void;
+  lazy?: boolean;
+}) {
+  const photo = photos[index];
+  return (
+    <button
+      type="button"
+      className={`coffee-photo ${className}`}
+      onClick={() => onOpen(index)}
+      aria-label={`Enlarge photo: ${photo.alt}`}
+    >
+      <img
+        src={photo.src}
+        alt={photo.alt}
+        width="960"
+        height="720"
+        loading={lazy ? "lazy" : undefined}
+      />
+    </button>
+  );
+}
+
 export default function CoffeeHousePage() {
+  const [openPhoto, setOpenPhoto] = useState<number | null>(null);
+
   return (
     <>
       <section className="page-head">
@@ -75,25 +114,22 @@ export default function CoffeeHousePage() {
               </a>
             </div>
           </div>
-          <img
-            className="coffee-intro__img"
-            src={images.coffeeHouse.exterior}
-            alt="The wooden front of Dharma Coffee House & Library"
-            width="960"
-            height="720"
+          <PhotoButton
+            index={0}
+            className="coffee-photo--large"
+            onOpen={setOpenPhoto}
+            lazy={false}
           />
         </div>
 
         <div className="container">
           <div className="coffee-photos">
-            {photos.map((photo) => (
-              <img
+            {photos.slice(1).map((photo, i) => (
+              <PhotoButton
                 key={photo.src}
-                src={photo.src}
-                alt={photo.alt}
-                width="960"
-                height="720"
-                loading="lazy"
+                index={i + 1}
+                className="coffee-photo--small"
+                onOpen={setOpenPhoto}
               />
             ))}
           </div>
@@ -127,6 +163,15 @@ export default function CoffeeHousePage() {
           </p>
         </div>
       </section>
+
+      {openPhoto !== null && (
+        <Lightbox
+          label="Dharma Coffee House photos"
+          images={photos}
+          startIndex={openPhoto}
+          onClose={() => setOpenPhoto(null)}
+        />
+      )}
     </>
   );
 }

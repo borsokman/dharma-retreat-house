@@ -1,0 +1,484 @@
+/* ---------- Progress ---------- */
+.book-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: var(--space-3) 0 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-faint);
+}
+
+.book-progress li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.book-progress__dot {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  font-size: 0.8rem;
+}
+
+.book-progress .is-current {
+  color: var(--text);
+}
+
+.book-progress .is-current .book-progress__dot {
+  background: var(--olive);
+  border-color: var(--olive);
+  color: #f9f6f0;
+}
+
+.book-progress .is-done {
+  color: var(--olive);
+}
+
+/* ---------- Sections ---------- */
+.book-section {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-3);
+}
+
+/* Leave room for the fixed navbar when scrolled into view. */
+.book-anchor {
+  scroll-margin-top: 96px;
+}
+
+.book-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-soft);
+  font-weight: 700;
+}
+
+/* ---------- 1. Search ---------- */
+.book-search__fields {
+  display: grid;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.book-search__fields .field {
+  margin: 0;
+}
+
+.book-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.book-input svg {
+  position: absolute;
+  left: 14px;
+  color: var(--olive);
+  pointer-events: none;
+}
+
+.book-input .select {
+  padding-left: 40px;
+}
+
+/* the native date picker draws its own icon */
+.book-input:has(input[type="date"]) svg {
+  display: none;
+}
+
+.book-preferred {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding: 10px 12px;
+  background: var(--sage);
+  border-radius: var(--radius-sm);
+}
+
+.book-preferred img {
+  width: 96px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.book-preferred p {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.book-preferred span {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+.book-preferred__remove {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.book-preferred__remove:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.book-search__hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: var(--space-2) 0 0;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+.book-search__hint svg {
+  flex-shrink: 0;
+  color: var(--olive);
+}
+
+@media (min-width: 560px) {
+  .book-search__fields {
+    grid-template-columns: 1fr 1fr;
+  }
+  .book-search__submit {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 960px) {
+  .book-search__fields {
+    grid-template-columns: repeat(4, 1fr) auto;
+  }
+  .book-search__submit {
+    grid-column: auto;
+  }
+}
+
+/* ---------- 2. Rooms ---------- */
+.book-choose__head {
+  margin-bottom: var(--space-3);
+}
+
+.book-choose__head h2 {
+  margin-bottom: 4px;
+}
+
+.book-notice h3 {
+  margin-top: 0;
+}
+
+.book-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-5);
+}
+
+.book-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 12px 14px;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    border-color 200ms,
+    box-shadow 200ms;
+}
+
+.book-slot:hover {
+  border-color: var(--olive);
+}
+
+.book-slot.is-filled {
+  border-style: solid;
+}
+
+.book-slot.is-active {
+  border: 2px solid var(--olive);
+  box-shadow: 0 0 0 4px rgba(90, 114, 71, 0.16);
+}
+
+.book-slot__num {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--sage);
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.book-slot.is-active .book-slot__num {
+  background: var(--olive);
+  color: #f9f6f0;
+}
+
+.book-slot.is-filled:not(.is-active) .book-slot__num {
+  color: var(--olive);
+}
+
+.book-slot__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.book-slot__title {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.book-slot__choice {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-slot__edit {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--link);
+  text-decoration: underline;
+}
+
+.book-step-title {
+  margin: 0 0 var(--space-2);
+}
+
+.book-step-title span {
+  font-weight: 400;
+  color: var(--text-soft);
+}
+
+.book-preferred-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-soft);
+}
+
+.book-options {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* .card.book-option: global.css (with .card padding) loads after page styles */
+.card.book-option {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  transition:
+    box-shadow 200ms,
+    outline-color 200ms;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+}
+
+.book-option--selected {
+  outline-color: var(--olive);
+}
+
+.book-option--off {
+  opacity: 0.6;
+}
+
+.book-option--off .book-option__img {
+  filter: grayscale(0.7);
+}
+
+.book-option__img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.book-option__body {
+  padding: var(--space-3) var(--space-3) 0;
+}
+
+.book-option__body h4 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+}
+
+.book-option__body h4 a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.book-option__body h4 a:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+.book-option__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+.book-option__meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.book-option__meta svg {
+  color: var(--olive);
+}
+
+.book-option__left {
+  margin: 8px 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--olive);
+}
+
+.book-option__left.is-last {
+  color: var(--terracotta);
+}
+
+.book-option__buy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.book-option__price {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.book-option__price span {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+@media (min-width: 720px) {
+  .card.book-option {
+    grid-template-columns: 200px 1fr auto;
+    align-items: center;
+  }
+  .book-option__img {
+    aspect-ratio: 4 / 3;
+  }
+  .book-option__body {
+    padding: var(--space-3) 0 var(--space-3) var(--space-4);
+  }
+  .book-option__buy {
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+/* ---------- 3. Summary + details ---------- */
+.book-details {
+  display: grid;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.book-details h2 {
+  margin-top: 0;
+}
+
+.book-summary__sub {
+  display: block;
+  font-weight: 400;
+  font-size: 0.88rem;
+  color: var(--text-faint);
+}
+
+.book-summary__list > div {
+  align-items: baseline;
+}
+
+.book-summary__list .book-summary__total {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 2px solid var(--text-faint);
+  border-bottom: none;
+  font-size: 1.15rem;
+}
+
+.book-summary__total dd {
+  font-weight: 700;
+}
+
+@media (min-width: 900px) {
+  .book-details {
+    grid-template-columns: 1fr 1.1fr;
+  }
+  .book-summary {
+    position: sticky;
+    top: 96px;
+  }
+}
+
+/* ---------- Done ---------- */
+.book-done {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.book-done .confirm-summary {
+  margin-top: var(--space-2);
+  text-align: left;
+}

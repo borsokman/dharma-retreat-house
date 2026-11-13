@@ -1,60 +1,24 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, BedDouble, Ruler, Users } from "lucide-react";
-import { api, isMockMode } from "../api/client";
+import { ArrowLeft, ArrowRight, BedDouble, Ruler, Users } from "lucide-react";
+import { api } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
-import { useBookingSearch } from "../hooks/useBookingSearch";
-import type { AvailabilityQuery, RoomAvailability, RoomType } from "../api/types";
+import type { RoomType } from "../api/types";
 import { Lightbox } from "../components/Lightbox";
-import { BookingRequestModal } from "../components/BookingRequestModal";
 import { policies } from "../data/site";
-import { formatMoney, pluralize, range, todayISO } from "../utils/format";
+import { formatMoney } from "../utils/format";
 import "./RoomDetailsPage.css";
 
 export default function RoomDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
   const { state: roomState, run: runRoom } = useAsync<RoomType | null>();
-  const {
-    state: availState,
-    run: runAvail,
-    reset: resetAvail,
-  } = useAsync<RoomAvailability[]>();
-  const { search } = useBookingSearch();
-  const [dates, setDates] = useState({
-    checkIn: search.checkIn || todayISO(1),
-    checkOut: search.checkOut || todayISO(3),
-  });
-  const [guests, setGuests] = useState(search.guests);
-  const [reserveOpen, setReserveOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (slug) void runRoom(() => api.getRoom(slug));
-    resetAvail();
-  }, [slug, runRoom, resetAvail]);
+  }, [slug, runRoom]);
 
   const room = roomState.kind === "done" ? roomState.data : null;
-  // The search widget allows more guests than a single room may hold.
-  const guestCount = room ? Math.min(guests, room.maxGuests) : guests;
-  const query: AvailabilityQuery = { ...dates, guests: guestCount, rooms: 1 };
-  const datesValid = !!dates.checkIn && dates.checkOut > dates.checkIn;
-  const checking = availState.kind === "loading";
-
-  function checkAvailability() {
-    if (!datesValid) return;
-    void runAvail(() => api.getAvailability(query));
-  }
-
-  /** Any change to the search invalidates the previously shown price. */
-  function changeSearch(apply: () => void) {
-    apply();
-    resetAvail();
-  }
-
-  const availability =
-    availState.kind === "done"
-      ? (availState.data.find((a) => a.room.slug === slug) ?? null)
-      : null;
 
   if (roomState.kind === "idle" || roomState.kind === "loading") {
     return (
@@ -91,13 +55,10 @@ export default function RoomDetailsPage() {
           <Link to="/stay" className="room-details__back">
             <ArrowLeft size={16} aria-hidden="true" /> All rooms
           </Link>
-          {isMockMode && (
-            <p className="badge badge--clay" role="note" style={{ marginTop: 8 }}>
-              Preview mode — availability and prices are simulated
-            </p>
-          )}
           <h1 className="mt-2">{room.name}</h1>
-          <p className="lede" style={{ maxWidth: 640 }}>{room.shortDescription}</p>
+          <p className="lede" style={{ maxWidth: 640 }}>
+            {room.shortDescription}
+          </p>
         </div>
       </section>
 
@@ -132,9 +93,16 @@ export default function RoomDetailsPage() {
               <h3>About this room</h3>
               <p className="lede">{room.description}</p>
               <ul className="room-details__facts" aria-label="Room facts">
-                <li><Users size={17} aria-hidden="true" /> Up to {room.maxGuests} guests</li>
-                <li><BedDouble size={17} aria-hidden="true" /> {room.bedType}</li>
-                <li><Ruler size={17} aria-hidden="true" /> {room.sizeSqm} m²</li>
+                <li>
+                  <Users size={17} aria-hidden="true" /> Up to {room.maxGuests}{" "}
+                  guests
+                </li>
+                <li>
+                  <BedDouble size={17} aria-hidden="true" /> {room.bedType}
+                </li>
+                <li>
+                  <Ruler size={17} aria-hidden="true" /> {room.sizeSqm} m²
+                </li>
               </ul>
               <h3 className="mt-2">Amenities</h3>
               <ul className="room-details__amenities">
@@ -144,112 +112,27 @@ export default function RoomDetailsPage() {
               </ul>
             </div>
 
-            <aside className="card room-details__booking" aria-label="Check availability and book">
-              <h3>Check availability</h3>
-              <div className="field">
-                <label htmlFor="rd-checkin">Check-in</label>
-                <input
-                  id="rd-checkin"
-                  className="input"
-                  type="date"
-                  min={todayISO()}
-                  value={dates.checkIn}
-                  onChange={(e) => {
-                    const checkIn = e.target.value;
-                    changeSearch(() =>
-                      setDates((d) => ({
-                        checkIn,
-                        checkOut: d.checkOut > checkIn ? d.checkOut : "",
-                      })),
-                    );
-                  }}
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="rd-checkout">Check-out</label>
-                <input
-                  id="rd-checkout"
-                  className="input"
-                  type="date"
-                  min={dates.checkIn || todayISO()}
-                  value={dates.checkOut}
-                  onChange={(e) => {
-                    const checkOut = e.target.value;
-                    changeSearch(() => setDates((d) => ({ ...d, checkOut })));
-                  }}
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="rd-guests">Guests</label>
-                <select
-                  id="rd-guests"
-                  className="select"
-                  value={guestCount}
-                  onChange={(e) => {
-                    const n = Number(e.target.value);
-                    changeSearch(() => setGuests(n));
-                  }}
-                >
-                  {range(room.maxGuests).map((n) => (
-                    <option key={n} value={n}>
-                      {pluralize(n, "guest")}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                type="button"
-                className="btn btn--primary btn--block"
-                onClick={checkAvailability}
-                disabled={checking || !datesValid}
+            <aside
+              className="card room-details__booking"
+              aria-label="Book this room"
+            >
+              <h3>Stay in the {room.name}</h3>
+              <p className="room-details__price">
+                {formatMoney(room.basePrice, room.currency)}
+                <span> / night</span>
+              </p>
+              <p className="room-details__price-note">
+                Up to {room.maxGuests} guests · breakfast included
+              </p>
+              <Link
+                to={`/book?room=${encodeURIComponent(room.slug)}`}
+                className="btn btn--sunset btn--block"
               >
-                {checking ? (
-                  <>
-                    <span className="spinner" aria-hidden="true" /> Checking…
-                  </>
-                ) : (
-                  "Check availability"
-                )}
-              </button>
-
-              {availState.kind === "error" && (
-                <p className="error-text" role="alert">
-                  {availState.message}
-                </p>
-              )}
-
-              {availability && (
-                <div className="room-details__result" role="status">
-                  {availability.available ? (
-                    <>
-                      <p className="room-details__price">
-                        {formatMoney(availability.totalPrice, availability.currency)}
-                      </p>
-                      <p className="room-details__price-note">
-                        total for {pluralize(availability.nights, "night")}
-                        {availability.taxesAndFees.length > 0 &&
-                          ` · incl. ${availability.taxesAndFees
-                            .map((t) => `${t.label} ${formatMoney(t.amount, availability.currency)}`)
-                            .join(", ")}`}
-                      </p>
-                      <button
-                        type="button"
-                        className="btn btn--sunset btn--block"
-                        onClick={() => setReserveOpen(true)}
-                      >
-                        Reserve this room
-                      </button>
-                    </>
-                  ) : (
-                    <p className="error-text">
-                      Not available for these dates — please try other dates or
-                      another room.
-                    </p>
-                  )}
-                </div>
-              )}
+                Book this room <ArrowRight size={18} aria-hidden="true" />
+              </Link>
               <p className="room-details__policy">
-                Free cancellation up to 48 hours before check-in.{" "}
+                Travelling with more people? Choose the number of rooms on the
+                next step. Free cancellation up to 48 hours before check-in.{" "}
                 {policies.checkIn}, {policies.checkOut.toLowerCase()}.
               </p>
             </aside>
@@ -264,14 +147,6 @@ export default function RoomDetailsPage() {
           startIndex={galleryIndex}
           onClose={() => setGalleryIndex(null)}
           renderInfo={() => <h3>{room.name}</h3>}
-        />
-      )}
-
-      {reserveOpen && availability?.available && (
-        <BookingRequestModal
-          selection={availability}
-          query={query}
-          onClose={() => setReserveOpen(false)}
         />
       )}
     </>

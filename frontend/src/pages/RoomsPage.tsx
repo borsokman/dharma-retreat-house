@@ -1,21 +1,13 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { rooms } from "../data/rooms";
 import type { RoomType } from "../api/types";
-import type { StayPageState } from "../hooks/useBookingSearch";
-import { AvailabilityResults } from "../components/AvailabilityResults";
 import { Lightbox } from "../components/Lightbox";
-import { formatDateLong, formatMoney, pluralize } from "../utils/format";
+import { formatMoney } from "../utils/format";
 import "./RoomsPage.css";
 
-function searchFromState(state: unknown) {
-  const search = (state as Partial<StayPageState> | null)?.search;
-  return search?.checkIn && search.checkOut ? search : null;
-}
-
 export default function RoomsPage() {
-  const location = useLocation();
-  const search = searchFromState(location.state);
   const [openRoom, setOpenRoom] = useState<RoomType | null>(null);
 
   return (
@@ -28,33 +20,14 @@ export default function RoomsPage() {
             Five room types to choose from — every one quiet, warm and
             supporting the school's work. Tap a room to see its photos.
           </p>
+          <Link to="/book" className="btn btn--sunset">
+            Check availability <ArrowRight size={18} aria-hidden="true" />
+          </Link>
         </div>
       </section>
 
-      {search && (
-        <section
-          className="section"
-          style={{ paddingTop: "var(--space-4)" }}
-          aria-labelledby="availability-title"
-        >
-          <div className="container">
-            <div className="section-head">
-              <h2 id="availability-title">Your availability</h2>
-              <p className="lede">
-                {formatDateLong(search.checkIn)} →{" "}
-                {formatDateLong(search.checkOut)} ·{" "}
-                {pluralize(search.guests, "guest")} ·{" "}
-                {pluralize(search.rooms, "room")}
-              </p>
-            </div>
-            <AvailabilityResults query={search} />
-          </div>
-        </section>
-      )}
-
       <section className="section" style={{ paddingTop: "var(--space-4)" }}>
         <div className="container">
-          {search && <h2>All rooms</h2>}
           <div className="room-grid">
             {rooms.map((room) => (
               <article key={room.slug} className="room-tile card card--hover">

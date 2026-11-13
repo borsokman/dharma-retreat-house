@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Wifi, Tv, Coffee, ParkingSquare, ArrowRight } from "lucide-react";
-import { BookingWidget } from "../components/BookingWidget";
 import { WhatsAppButton } from "../components/WhatsAppButton";
 import { images } from "../data/images";
 import { useSiteTheme } from "../layouts/SiteLayout";
@@ -22,8 +21,8 @@ const navigationCards: NavigationCard[] = [
   },
   {
     title: "Explore Tawang",
-    image: images.tawang.hero,
-    alt: "Mountain landscape in Tawang",
+    image: images.exploreTawang,
+    alt: "Giant Buddha Statue in Tawang",
     to: "/tawang",
   },
   {
@@ -46,8 +45,8 @@ const navigationCards: NavigationCard[] = [
   },
   {
     title: "Contact",
-    image: images.heroLight,
-    alt: "Dharma Retreat House building",
+    image: images.contact,
+    alt: "Dharma Retreat House Logo",
     to: "/contact",
   },
 ];
@@ -120,8 +119,13 @@ export default function HomePage() {
             A tranquil, boutique homestay experience combining authentic
             Himalayan warmth with modern comforts and scenic mountain vistas.
           </p>
-          <div className="animate-fade-up">
-            <BookingWidget />
+          <div className="hero__actions animate-fade-up">
+            <Link to="/book" className="btn btn--sunset">
+              Check availability <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+            <Link to="/stay" className="btn btn--ghost hero__ghost">
+              See the rooms
+            </Link>
           </div>
         </div>
       </section>
@@ -227,7 +231,7 @@ export default function HomePage() {
         <div className="container text-center">
           <h2 id="cta-title">Come and stay</h2>
           <div className="home-cta__actions">
-            <Link to="/stay" className="btn btn--primary">
+            <Link to="/book" className="btn btn--primary">
               Book Now
             </Link>
             <WhatsAppButton />

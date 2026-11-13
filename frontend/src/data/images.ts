@@ -14,6 +14,8 @@ export const images = {
   heroDark: publicAsset("dharmahouse-hero-dark.jpg"),
   logoLight: publicAsset("logo-light.webp"),
   logoDark: publicAsset("logo-dark.webp"),
+  contact: publicAsset("contact.jpg"),
+  exploreTawang: publicAsset("giant-buddha-statue.jpg"),
   tawang: {
     hero: publicAsset("tawang/tawang-hero.jpg"),
     map: publicAsset("tawang/tawang-map.jpg"),

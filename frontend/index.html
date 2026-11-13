@@ -43,8 +43,64 @@
         }
       })();
     </script>
+    <style>
+      /* Loading screen: shown until the app has rendered (src/main.tsx fades it out). */
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        transition: opacity 400ms ease;
+      }
+      [data-theme="dark"] #boot {
+        background: #1a1f1b;
+      }
+      #boot img {
+        width: min(340px, 70vw);
+        height: auto;
+        animation: boot-breathe 2.4s ease-in-out infinite;
+      }
+      #boot.boot--done {
+        opacity: 0;
+        pointer-events: none;
+      }
+      @keyframes boot-breathe {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.75;
+          transform: scale(0.97);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot img {
+          animation: none;
+        }
+        #boot {
+          transition: none;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="boot" role="status" aria-label="Loading Dharma Retreat House">
+      <img id="boot-img" alt="" width="640" height="522" />
+    </div>
+    <script>
+      // Pick the logo for the theme set above (only that one is downloaded).
+      (function () {
+        var dark =
+          document.documentElement.getAttribute("data-theme") === "dark";
+        document.getElementById("boot-img").src =
+          "%BASE_URL%" +
+          (dark ? "loading-screen-dark.webp" : "loading-screen.webp");
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

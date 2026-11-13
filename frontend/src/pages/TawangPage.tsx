@@ -18,7 +18,7 @@ type Block = {
 
 const introBlocks: Block[] = [
   {
-    title: "An unexplored beauty of the North-East",
+    title: "Where is Tawang?",
     paragraphs: [
       "Tawang in Arunachal Pradesh, located in the north-eastern part of India bordering Tibet in the north and Bhutan in the south-west, is praised by all as the unexplored beauty of the North-East with majestic mountain peaks, lakes, forests and waterfalls.",
       "It is one of the most beautiful places in India, ornamented with its rich cultures and traditions.",
@@ -533,7 +533,7 @@ export default function TawangPage() {
               Dharma Retreat House sits right in this landscape — rest here
               while you explore.
             </p>
-            <Link to="/stay" className="btn btn--primary">
+            <Link to="/book" className="btn btn--primary">
               Book your stay <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>

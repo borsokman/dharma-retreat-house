@@ -34,8 +34,8 @@ export const site = {
 export const navLinks = [
   { label: "Home", to: "/" },
   { label: "Rooms", to: "/stay" },
-  { label: "Explore Tawang", to: "/tawang" },
-  { label: "Dharma Coffee House", to: "/dharma-coffee-house" },
+  { label: "Tawang", to: "/tawang" },
+  { label: "Our Partner", to: "/dharma-coffee-house" },
   { label: "Our Mission", to: "/our-mission" },
   { label: "Gallery", to: "/gallery" },
   { label: "Contact", to: "/contact" },

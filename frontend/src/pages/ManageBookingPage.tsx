@@ -3,7 +3,13 @@ import { KeyRound } from "lucide-react";
 import { api, isMockMode } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
 import type { HotelBooking } from "../api/types";
-import { formatDateLong, formatMoney, formatStatus } from "../utils/format";
+import {
+  formatDateLong,
+  formatMoney,
+  formatStatus,
+  pluralize,
+} from "../utils/format";
+import "../styles/forms.css";
 import "./ManageBookingPage.css";
 
 export default function ManageBookingPage() {
@@ -101,10 +107,16 @@ export default function ManageBookingPage() {
             <div className="card" aria-live="polite">
               <h3>Booking {booking.reference}</h3>
               <dl className="confirm-summary">
-                <div>
-                  <dt>Room</dt>
-                  <dd>{booking.roomName}</dd>
-                </div>
+                {booking.rooms.map((room, i) => (
+                  <div key={i}>
+                    <dt>
+                      {booking.rooms.length > 1 ? `Room ${i + 1}` : "Room"}
+                    </dt>
+                    <dd>
+                      {room.roomName} · {pluralize(room.guests, "guest")}
+                    </dd>
+                  </div>
+                ))}
                 <div>
                   <dt>Dates</dt>
                   <dd>

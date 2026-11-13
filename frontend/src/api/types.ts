@@ -19,21 +19,48 @@ export interface TaxOrFee {
   amount: number;
 }
 
-export interface RoomAvailability {
-  room: RoomType;
-  available: boolean;
-  /** Total for the whole stay, taxes and fees included where supplied. */
-  totalPrice: number;
-  currency: string;
-  nights: number;
-  taxesAndFees: TaxOrFee[];
-}
-
-export interface AvailabilityQuery {
+/** Stay dates: nights from checkIn up to, not including, checkOut. */
+export interface StayDates {
   checkIn: string; // ISO yyyy-mm-dd
   checkOut: string; // ISO yyyy-mm-dd
+}
+
+/** One room type for the searched dates. */
+export interface RoomAvailability {
+  room: RoomType;
+  /** Rooms of this type free for every night of the stay. */
+  roomsLeft: number;
+  nights: number;
+  /** One room for the whole stay, before discount and taxes. */
+  stayPrice: number;
+  currency: string;
+}
+
+/** One room of a booking: its type and how many guests sleep in it. */
+export interface RoomSelection {
+  roomSlug: string;
   guests: number;
-  rooms: number;
+}
+
+export interface StayQuoteRequest extends StayDates {
+  rooms: RoomSelection[];
+}
+
+export interface StayQuote {
+  nights: number;
+  currency: string;
+  lines: {
+    roomSlug: string;
+    roomName: string;
+    guests: number;
+    amount: number;
+  }[];
+  /** All rooms, all nights, before discount and taxes. */
+  subtotal: number;
+  /** Long-stay discount, when the nights reach a tier. */
+  discount?: TaxOrFee;
+  taxesAndFees: TaxOrFee[];
+  totalPrice: number;
 }
 
 export interface GuestContact {
@@ -42,9 +69,7 @@ export interface GuestContact {
   phone: string;
 }
 
-export interface HotelBookingRequest {
-  availabilityQuery: AvailabilityQuery;
-  roomSlug: string;
+export interface HotelBookingRequest extends StayQuoteRequest {
   contact: GuestContact;
   specialRequests?: string;
 }
@@ -57,7 +82,7 @@ export interface HotelBooking {
     | "cancelled"
     | "checked_in"
     | "checked_out";
-  roomName: string;
+  rooms: { roomName: string; guests: number }[];
   checkIn: string;
   checkOut: string;
   guests: number;
