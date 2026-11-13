@@ -1,0 +1,31 @@
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  align-items: center;
+}
+
+/* Alternate sides: image on the left for every other chapter. */
+.mission-grid--flip .mission-page__img {
+  order: -1;
+}
+
+.mission-page__img img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 860px) {
+  .mission-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .mission-grid--flip .mission-page__img {
+    order: 0;
+  }
+}
