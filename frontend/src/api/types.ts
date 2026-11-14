@@ -93,4 +93,6 @@ export interface HotelBooking {
   refundPolicy: string;
   /** Hosted checkout URL returned by the backend, when payment is required. */
   paymentUrl?: string;
+  /** Only right after booking: the secret code for the manage-booking page. */
+  manageToken?: string;
 }

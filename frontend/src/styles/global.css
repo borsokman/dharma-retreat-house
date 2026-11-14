@@ -68,7 +68,10 @@
   --ease-organic: cubic-bezier(0.45, 0, 0.35, 1);
   --transition: 480ms var(--ease-organic);
 
-  --container: 1160px;
+  /* content width and side gutter, as on the reference design (1280px + 40px) */
+  --container: 1280px;
+  --gutter: 24px;
+  --section-space: 64px;
 
   /* Surfaces (theme-aware) */
   --surface: #fff;
@@ -249,18 +252,30 @@ a:hover {
 /* ---------- Layout helpers ---------- */
 .container {
   width: 100%;
-  max-width: var(--container);
+  max-width: calc(var(--container) + 2 * var(--gutter));
   margin: 0 auto;
-  padding: 0 var(--space-3);
+  padding: 0 var(--gutter);
 }
 
 .section {
-  padding: var(--space-7) 0;
+  padding: var(--section-space) 0;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-space: 96px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 40px;
+  }
 }
 
 /* Coloured header band at the top of inner pages (sits under the fixed navbar). */
 .page-head {
-  padding: calc(76px + var(--space-5)) 0 var(--space-3);
+  padding: calc(76px + var(--space-6)) 0 var(--space-6);
   background: var(--sage);
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
@@ -367,6 +382,16 @@ a:hover {
 
 .btn--ghost:hover {
   background: rgba(45, 90, 61, 0.08);
+}
+
+/* the green outline and text disappear on the dark background */
+[data-theme="dark"] .btn--ghost {
+  color: var(--text);
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+
+[data-theme="dark"] .btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* WhatsApp green with dark text keeps the contrast readable. */

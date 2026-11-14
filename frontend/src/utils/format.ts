@@ -10,7 +10,21 @@ function toISODate(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+/**
+ * "2030-02-01" → "Fri, Feb 1, 2030". A full timestamp such as a cancellation
+ * deadline ("2030-01-30T08:30:00Z") also shows the local time.
+ */
 export function formatDateLong(iso: string): string {
+  if (iso.length > 10) {
+    return new Date(iso).toLocaleString(undefined, {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
   return parseISODate(iso).toLocaleDateString(undefined, {
     weekday: "short",
     year: "numeric",
@@ -57,7 +71,11 @@ export function formatMoney(amount: number, currency: string): string {
 }
 
 /** "1 guest", "3 guests", "2 nights" … */
-export function pluralize(n: number, singular: string, plural = `${singular}s`) {
+export function pluralize(
+  n: number,
+  singular: string,
+  plural = `${singular}s`,
+) {
   return `${n} ${n === 1 ? singular : plural}`;
 }
 

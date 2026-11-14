@@ -1,61 +1,204 @@
-.room-grid {
+.stay-list-section {
+  padding-top: var(--space-6);
+}
+
+.stay-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-3);
+  gap: var(--space-5); /* 32px between cards */
 }
 
-.room-tile {
-  display: flex;
-  flex-direction: column;
+/* ---------- One room ---------- */
+.stay-card {
+  display: grid;
+  grid-template-columns: 1fr;
   overflow: hidden;
-  text-align: left;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  /* /stay#room lands below the fixed navbar */
+  scroll-margin-top: 96px;
 }
 
-.room-tile__img {
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
+.stay-card__media {
+  position: relative;
+  display: block;
+  min-height: 300px;
+  aspect-ratio: 16 / 10;
   padding: 0;
+  overflow: hidden;
   border: none;
-  background: transparent;
+  background: var(--sage);
   cursor: pointer;
 }
 
-.room-tile__img img {
+.stay-card__media img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
-  transition: transform 600ms var(--ease-organic, ease);
+  transition: transform 900ms var(--ease-organic);
 }
 
-.room-tile:hover .room-tile__img img,
-.room-tile__img:focus-visible img {
+.stay-card__media:hover img,
+.stay-card__media:focus-visible img {
   transform: scale(1.04);
 }
 
-.room-tile__body {
+/* soft shade so the chips stay readable on bright photos */
+.stay-card__media::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(20, 24, 18, 0.55), transparent);
+  pointer-events: none;
+}
+
+.stay-card__chip {
+  position: absolute;
+  z-index: 1;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(20, 24, 18, 0.55);
+  backdrop-filter: blur(6px);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f9f6f0;
+}
+
+.stay-card__chip--rooms {
+  left: 16px;
+}
+
+.stay-card__chip--photos {
+  right: 16px;
+}
+
+.stay-card__body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 8px);
-  padding: var(--space-3, 16px);
-  color: inherit;
-  text-decoration: none;
+  gap: var(--space-2);
+  padding: var(--space-5);
 }
 
-.room-tile__body:hover h3 {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.room-tile__body h3 {
+.stay-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  list-style: none;
   margin: 0;
-}
-
-.room-tile__price {
-  font-family: var(--font-serif, inherit);
+  padding: 0;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: var(--forest, #2f4a3c);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.stay-card__meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.stay-card__meta svg {
+  color: var(--olive);
+}
+
+.stay-card__body h2 {
+  margin: 4px 0 0;
+  font-size: clamp(1.9rem, 3vw, 2.25rem);
+  line-height: 1.1;
+}
+
+.stay-card__desc {
   margin: 0;
+  color: var(--text-soft);
+  line-height: 1.65;
+}
+
+.stay-card__amenities {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+.stay-card__amenities li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.stay-card__amenities svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--olive);
+}
+
+.stay-card__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-soft);
+}
+
+.stay-card__price {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+
+.stay-card__price span {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.stay-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.stay-list__policy {
+  margin: 0;
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--text-soft);
+}
+
+/* ---------- Wide screens: photo beside text, sides alternate ---------- */
+@media (min-width: 900px) {
+  .stay-card {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stay-card__media {
+    aspect-ratio: auto;
+    min-height: 380px;
+    height: 100%;
+  }
+  .stay-card--flip .stay-card__media {
+    order: 2;
+  }
+  .stay-card__body {
+    justify-content: center;
+    padding: 56px;
+  }
 }

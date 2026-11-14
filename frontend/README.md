@@ -11,14 +11,17 @@ creating an account: a booking is managed with its reference number.
   rooms (up to 2 guests per room, 12 rooms), then the guest picks each room
   step by step ("Room 1 of 2 — for 2 guests"), then a price summary and
   contact details. One booking can hold several rooms.
-- **Stay** — room listing; **Room details** — gallery, amenities and a
-  "Book this room" button (`/book?room=<slug>` pre-selects it).
+- **Stay** (`/stay`) — every room type as a wide card: photos, facts,
+  description, amenities, price and a "Book this room" button
+  (`/book?room=<slug>` pre-selects it). `/stay#<slug>` jumps to one room.
 - **Our Mission**, **Gallery**, **Contact** — editable content with clearly
   marked placeholders.
 - **Manage booking** — account-free lookup and cancellation using a booking
   reference plus a secure code/link (the backend must verify the secure part).
-- **Staff area** (`/staff`) — sign-in placeholder and dashboard skeleton.
-  Real authentication and authorization must be enforced by the backend.
+- **Staff area** (`/staff`) — sign-in and dashboard: every booking with the
+  guest's email, phone, dates and room numbers; confirm, check in/out, cancel;
+  move guests to another room; mark rooms unavailable (hidden from the booking
+  form). Needs the backend: see `../backend/README.md`.
 
 ## Tech
 
@@ -27,7 +30,9 @@ creating an account: a booking is managed with its reference number.
 - A single, isolated API layer in `src/api/`:
   - `contract.ts` — the interface the backend must fulfill
   - `client.ts` — chooses the implementation based on `VITE_API_BASE_URL`;
-    also contains the starting point of the real HTTP client
+    the HTTP client merges the backend's prices with the room text and photos
+    in `src/data/rooms.ts`
+  - `staff.ts` — the staff dashboard API (backend only, no mock)
   - `mock.ts` — mock adapter used when no API URL is configured.
     **Everything it returns is simulated** (availability, prices, bookings).
 
@@ -38,24 +43,25 @@ npm install
 npm run dev
 ```
 
-Copy `.env.example` to `.env` and point `VITE_API_BASE_URL` at the backend
-(e.g. `http://localhost:8080/api/v1`). Until a value is set, the app runs in
-**preview mode** with the mock adapter, and the UI clearly labels simulated
-data.
+`npm run dev` runs in **preview mode** with the mock adapter: simulated
+prices and availability, no staff area.
 
-## Initial API contract (backend)
+`npm run dev:api` uses the real Go backend (start it first, see
+`../backend/README.md`). Vite proxies `/api` to `127.0.0.1:8080`, so the site
+and the API share one origin and the staff session cookie works.
 
-- `GET  /api/v1/rooms` — room catalogue
-- `GET  /api/v1/rooms/{slug}` — one room (404 when unknown)
+## API (backend/internal/api)
+
+- `GET  /api/v1/rooms` — room types with current prices
 - `GET  /api/v1/rooms/availability?check_in&check_out` — free rooms per room type + prices
 - `POST /api/v1/bookings/quote` — price for `rooms: [{ room_type, guests }]`
 - `POST /api/v1/bookings` — create one booking holding one or more rooms
 - `GET  /api/v1/bookings/{reference}` — booking details (secure token required)
 - `POST /api/v1/bookings/cancel` — cancel with a secure token
-- `/api/v1/staff/*` — authenticated staff operations
-
-Adjust `src/api/client.ts` if the final routes or payload shapes differ —
-components and hooks do not need to change.
+- `POST /api/v1/staff/login`, `/logout`, `GET /staff/me`, `GET /staff/today`
+- `GET  /api/v1/staff/bookings?view&q`, `GET|PATCH /staff/bookings/{id}`
+- `GET  /api/v1/staff/bookings/{id}/stays/{stay}/options`, `POST .../move`
+- `GET  /api/v1/staff/rooms`, `PATCH /staff/rooms/{number}`
 
 ## Deployment
 
@@ -63,13 +69,15 @@ components and hooks do not need to change.
 npm run build
 ```
 
-Deploy the `dist/` folder to any static host. Set `VITE_API_BASE_URL` at build
-time to the public HTTPS URL of the API. The API must send permissive CORS
-headers for the site's origin.
+Serve the `dist/` folder and the backend's `/api` from the same HTTPS domain
+(e.g. Caddy or nginx in front of `drh serve`), and build with
+`VITE_API_BASE_URL=/api/v1`. Same origin keeps the staff cookie strict and
+needs no CORS.
 
 ## Replacing placeholder content
 
 - Images: `src/data/images.ts` (all placeholder slots are listed there).
 - Names, contact details, policies: `src/data/site.ts`.
-- Room catalog: `src/data/rooms.ts` (superseded by the backend once live).
+- Room text and photos: `src/data/rooms.ts`. With the backend, prices come
+  from its database (in INR); the USD prices in this file are preview only.
 - Placeholder texts marked with `[...]` in the Mission and Contact pages.

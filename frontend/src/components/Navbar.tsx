@@ -77,7 +77,7 @@ export function Navbar({ theme, onToggleTheme }: NavbarProps) {
             </NavLink>
           ))}
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <Link to="/book" className="btn btn--sunset btn--sm">
+          <Link to="/book" className="btn btn--primary btn--sm">
             Book Now
           </Link>
         </nav>

@@ -28,3 +28,7 @@ npm-debug.log*
 *.db
 *.db-wal
 *.db-shm
+
+# local dev test login
+backend/dev-login.txt
+backend/bin/

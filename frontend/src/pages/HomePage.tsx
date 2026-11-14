@@ -32,19 +32,19 @@ const navigationCards: NavigationCard[] = [
     to: "/dharma-coffee-house",
   },
   {
-    title: "Gallery",
-    image: images.gallery.monastery,
-    alt: "Placeholder image for the gallery",
-    to: "/gallery",
-  },
-  {
     title: "Our Mission",
     image: images.mission.firstClass,
     alt: "Pupils of Tashol Tengyur School in their classroom",
     to: "/our-mission",
   },
   {
-    title: "Contact",
+    title: "Gallery",
+    image: images.gallery.monastery,
+    alt: "Placeholder image for the gallery",
+    to: "/gallery",
+  },
+  {
+    title: "Contact Us",
     image: images.contact,
     alt: "Dharma Retreat House Logo",
     to: "/contact",
@@ -120,7 +120,7 @@ export default function HomePage() {
             Himalayan warmth with modern comforts and scenic mountain vistas.
           </p>
           <div className="hero__actions animate-fade-up">
-            <Link to="/book" className="btn btn--sunset">
+            <Link to="/book" className="btn btn--primary">
               Check availability <ArrowRight size={18} aria-hidden="true" />
             </Link>
             <Link to="/stay" className="btn btn--ghost hero__ghost">

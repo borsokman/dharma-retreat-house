@@ -8,7 +8,7 @@
 --     check_in_date up to, but NOT including, check_out_date.
 --   * Timestamps: UTC ISO-8601 text, e.g. '2030-01-10T08:30:00Z'.
 --   * The app sets PRAGMA foreign_keys = ON on EVERY connection and
---     PRAGMA journal_mode = WAL once (see src/db.ts). They are not in this file
+--     PRAGMA journal_mode = WAL once (see internal/store/db.go). They are not in this file
 --     because journal_mode cannot change inside a transaction.
 --   * Bookings are never deleted. They are cancelled. Hence ON DELETE RESTRICT.
 --   * A room stay holds its room only while BOTH are true: the booking status is
@@ -51,7 +51,8 @@ CREATE TABLE rooms (
     room_type_id  INTEGER NOT NULL REFERENCES room_types(id) ON DELETE RESTRICT,
     max_guests    INTEGER NOT NULL DEFAULT 2 CHECK (max_guests BETWEEN 1 AND 10),
     status        TEXT    NOT NULL DEFAULT 'active'
-                  CHECK (status IN ('active', 'out_of_service'))
+                  CHECK (status IN ('active', 'out_of_service')),
+    status_note   TEXT    -- why staff took it out of service, e.g. 'Leaking shower'
 ) STRICT;
 
 -- ---------------------------------------------------------------------
@@ -103,6 +104,18 @@ CREATE TABLE staff_users (
     is_active      INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
     created_at     TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 ) STRICT;
+
+-- One row per signed-in browser. The cookie holds a random token; only its
+-- SHA-256 hash is stored, so a copy of the database cannot be used to sign in.
+CREATE TABLE staff_sessions (
+    id             INTEGER PRIMARY KEY,
+    token_hash     TEXT    NOT NULL UNIQUE,
+    staff_user_id  INTEGER NOT NULL REFERENCES staff_users(id) ON DELETE CASCADE,
+    created_at     TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+    expires_at     TEXT    NOT NULL
+) STRICT;
+
+CREATE INDEX idx_staff_sessions_user ON staff_sessions(staff_user_id);
 
 -- ---------------------------------------------------------------------
 -- bookings: one per guest reservation. Prices are SNAPSHOTS taken at booking

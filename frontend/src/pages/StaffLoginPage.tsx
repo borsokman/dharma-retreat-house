@@ -1,13 +1,14 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Lock } from "lucide-react";
-import { api } from "../api/client";
+import { ApiRequestError } from "../api/client";
+import { staffApi, staffAvailable } from "../api/staff";
 import "./StaffLoginPage.css";
 
 /**
- * Placeholder staff login. Real authentication and authorization must be
- * enforced by the Go backend (e.g. session tokens on /api/v1/staff/*) —
- * hiding this route in the frontend is not a security measure.
+ * Staff sign-in. The backend checks the password and sets an HttpOnly session
+ * cookie; the dashboard's data is only ever served to a valid session, so
+ * hiding this page would add nothing.
  */
 export default function StaffLoginPage() {
   const navigate = useNavigate();
@@ -16,15 +17,29 @@ export default function StaffLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // already signed in on this browser: go straight to the dashboard
+  useEffect(() => {
+    if (!staffAvailable) return;
+    staffApi
+      .me()
+      .then(() => navigate("/staff/dashboard", { replace: true }))
+      .catch(() => {});
+  }, [navigate]);
+
   async function submit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      await api.listRooms(); // Placeholder check while backend auth is pending.
+      await staffApi.login(email, password);
       navigate("/staff/dashboard");
-    } catch {
-      setError("Sign-in is not available yet — the staff backend is pending.");
+    } catch (err) {
+      setPassword("");
+      setError(
+        err instanceof ApiRequestError && err.status !== 0
+          ? err.message
+          : "Cannot reach the booking server. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -35,9 +50,15 @@ export default function StaffLoginPage() {
       <form className="card staff-login__card" onSubmit={submit}>
         <p className="eyebrow">Staff area</p>
         <h1>Staff sign-in</h1>
-        <p className="lede">
-          For hotel staff only. Access is verified by the backend.
-        </p>
+        {staffAvailable ? (
+          <p className="lede">For hotel staff only.</p>
+        ) : (
+          <p className="badge badge--clay staff-login__note" role="note">
+            The site is in preview mode, without the booking server. Start it
+            with <code>npm run dev:api</code> (see backend/README.md) to sign
+            in.
+          </p>
+        )}
         <div className="field">
           <label htmlFor="st-email">Work email</label>
           <input
@@ -70,7 +91,7 @@ export default function StaffLoginPage() {
         <button
           type="submit"
           className="btn btn--primary btn--block"
-          disabled={loading}
+          disabled={loading || !staffAvailable}
         >
           <Lock size={16} aria-hidden="true" />
           {loading ? "Signing in…" : "Sign in"}

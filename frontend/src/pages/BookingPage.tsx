@@ -377,7 +377,7 @@ export default function BookingPage() {
               </div>
               <button
                 type="submit"
-                className="btn btn--sunset book-search__submit"
+                className="btn btn--primary book-search__submit"
               >
                 <Search size={18} aria-hidden="true" /> Show available rooms
               </button>
@@ -707,7 +707,7 @@ function RoomOption({
       />
       <div className="book-option__body">
         <h4>
-          <Link to={`/stay/${room.slug}`}>{room.name}</Link>
+          <Link to={`/stay#${room.slug}`}>{room.name}</Link>
         </h4>
         <ul className="book-option__meta" aria-label="Room facts">
           <li>
@@ -863,8 +863,9 @@ function BookingConfirmation({ booking }: { booking: HotelBooking }) {
           </dl>
           <p className="lede">
             Cancellation deadline:{" "}
-            {formatDateLong(booking.cancellationDeadline)}. A confirmation email
-            is on its way.
+            {formatDateLong(booking.cancellationDeadline)}.
+            {/* the real backend sends no emails yet: it shows the code below */}
+            {!booking.manageToken && " A confirmation email is on its way."}
           </p>
           {booking.paymentUrl && (
             <a
@@ -874,10 +875,26 @@ function BookingConfirmation({ booking }: { booking: HotelBooking }) {
               Continue to payment
             </a>
           )}
-          <p className="mt-2">
-            Keep your reference safe, or{" "}
-            <Link to="/manage-booking">manage this booking</Link> later.
-          </p>
+          {booking.manageToken ? (
+            <p className="mt-2">
+              Your booking code is <strong>{booking.manageToken}</strong>. Keep
+              it with your reference to{" "}
+              <Link
+                to={`/manage-booking?${new URLSearchParams({
+                  ref: booking.reference,
+                  token: booking.manageToken,
+                })}`}
+              >
+                manage this booking
+              </Link>{" "}
+              later.
+            </p>
+          ) : (
+            <p className="mt-2">
+              Keep your reference safe, or{" "}
+              <Link to="/manage-booking">manage this booking</Link> later.
+            </p>
+          )}
         </div>
       </div>
     </section>

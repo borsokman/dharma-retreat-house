@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
 import { KeyRound } from "lucide-react";
 import { api, isMockMode } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
@@ -15,8 +16,10 @@ import "./ManageBookingPage.css";
 export default function ManageBookingPage() {
   const lookupAsync = useAsync<HotelBooking>();
   const cancelAsync = useAsync<HotelBooking>();
-  const [reference, setReference] = useState("");
-  const [token, setToken] = useState("");
+  // the link on the confirmation page fills both fields
+  const [params] = useSearchParams();
+  const [reference, setReference] = useState(params.get("ref") ?? "");
+  const [token, setToken] = useState(params.get("token") ?? "");
 
   const lookupState = lookupAsync.state;
   const cancelState = cancelAsync.state;
